@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Ansible variables for BASH
+# Fabrizio Colonna <colofabrix@tin.it>
+
+# The environment assigned to this machine
+export MACHINE_ENV="{{ env | default('') }}"
+
+# The environment assigned to this machine
+{% if env_description is defined %}
+export MACHINE_ENV_DESC="{{ env_description }}"
+{% elif environments is defined %}
+export MACHINE_ENV_DESC="{{ (environments | selectattr("name", "equalto", env) | list | first).description }}"
+{% else %}
+export MACHINE_ENV_DESC=""
+{% endif %}
+
+# The datacenter where this machine is located
+export MACHINE_DC="{{ dc | default('') }}"
+
+# The environment assigned to this machine
+{% if dc_description is defined %}
+export MACHINE_DC_DESC="{{ dc_description }}"
+{% elif datacenters is defined %}
+export MACHINE_DC_DESC="{{ (datacenters | selectattr("name", "equalto", dc) | list | first).description }}"
+{% else %}
+export MACHINE_DC_DESC=""
+{% endif %}
+
+# What Ansible groups this machine is member
+export MACHINE_MEMBER_OF="{{ memberof | default([]) | join(' ') }}"
+
+# vim: ft=sh:ts=4:sw=4

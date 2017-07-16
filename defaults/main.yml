@@ -1,0 +1,19 @@
+---
+
+# The owner that will appear in any description
+owner: "Example COM"
+
+# Script that runs after all other custom scripts have run
+bash_host_overrides: ""
+
+# Bash customizations for users
+#
+# system_users:
+#  - username: user1
+#    shell: /bin/bash
+#    bashrc: |
+#      echo "This is the ~/.bashrc file."
+#    bash_profile: |
+#      echo "This is the ~/.bash_profile file."
+#    path: ["$HOME/my_custom_app"]
+system_users: []

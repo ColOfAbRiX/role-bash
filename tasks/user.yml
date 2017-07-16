@@ -1,0 +1,15 @@
+---
+
+- name: "User Scripts"
+  template:
+    src:    "home/{{ item }}.j2"
+    dest:   "~/.{{ item }}"
+    force:  yes
+    mode:   '0600'
+    seuser: system_u
+    serole: object_r
+    setype: user_home_t
+  when: user.shell | default('/bin/bash') == '/bin/bash'
+  with_items:
+   - bashrc
+   - bash_profile
