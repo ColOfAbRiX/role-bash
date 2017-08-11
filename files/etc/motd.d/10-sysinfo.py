@@ -166,6 +166,19 @@ def file_entry(file_path, regex, default=()):
     return default
 
 
+def add_error_entry(title, description):
+    """
+    Builds and entry marked as error
+    """
+    global data_output
+
+    data_output.append({
+        'title': title,
+        'value': output,
+        'color': fg("grey_30")
+    })
+
+
 data_output = []
 
 
@@ -181,18 +194,14 @@ try:
         time.timezone if (time.localtime().tm_isdst == 0) else time.altzone / 60 / 60 * -1,
         time.tzname[time.daylight]
     )
-    color = fg("white")
-    output = time_string
+    data_output.append({
+        'title': 'Time',
+        'value': time_string,
+        'color': fg("white")
+    })
 
 except:
-    color = fg("grey_30")
-    output = "EXCEPTION"
-
-data_output.append({
-    'title': 'Time',
-    'value': output,
-    'color': color
-})
+    add_error_entry("Time", "EXCEPTION")
 
 
 #
@@ -200,18 +209,14 @@ data_output.append({
 #
 try:
     dist, ver, _ = platform.linux_distribution(full_distribution_name=True)
-    output = "{0} {1}".format(dist, ver)
-    color = fg("white")
+    data_output.append({
+        'title': 'Linux',
+        'value': "{0} {1}".format(dist, ver),
+        'color': fg("white")
+    })
 
 except:
-    color = fg("grey_30")
-    output = "EXCEPTION"
-
-data_output.append({
-    'title': 'Linux',
-    'value': output,
-    'color': color
-})
+    add_error_entry("Linux", "EXCEPTION")
 
 
 #
@@ -220,7 +225,6 @@ data_output.append({
 if os.environ.get('MACHINE_ENV', '') != '':
     try:
         machine_env = os.environ['MACHINE_ENV'].strip().lower()
-        output = os.environ.get('MACHINE_ENV_DESC', machine_env).strip()
 
         color = fg("white")
         if machine_env == 'int':
@@ -228,33 +232,26 @@ if os.environ.get('MACHINE_ENV', '') != '':
         elif machine_env == 'prd':
             color = fg("light_red")
 
-    except:
-        color = fg("grey_30")
-        output = "EXCEPTION"
-
-    if output != '':
         data_output.append({
             'title': 'Environment',
-            'value': output,
+            'value': os.environ.get('MACHINE_ENV_DESC', machine_env).strip(),
             'color': color
         })
+
+    except:
+        add_error_entry("Environment", "EXCEPTION")
 
 if os.environ.get('MACHINE_DC', '') != '':
     try:
         machine_dc = os.environ['MACHINE_DC'].strip().lower()
-        output = os.environ.get('MACHINE_DC_DESC', machine_dc).strip()
-        color = fg("white")
-
-    except:
-        color = fg("grey_30")
-        output = "EXCEPTION"
-
-    if output != '':
         data_output.append({
             'title': 'Datacenter',
-            'value': output,
-            'color': color
+            'value': os.environ.get('MACHINE_DC_DESC', machine_dc).strip(),
+            'color': fg("white")
         })
+
+    except:
+        add_error_entry("Datacenter", "EXCEPTION")
 
 
 #
@@ -262,18 +259,14 @@ if os.environ.get('MACHINE_DC', '') != '':
 #
 try:
     uptime = file_entry('/proc/uptime', r'^([\d.]+)')[0]
-    output = format_timedelta(round(float(uptime)))
-    color = fg("white")
+    data_output.append({
+        'title': 'Uptime',
+        'value': format_timedelta(round(float(uptime))),
+        'color': fg("white")
+    })
 
 except:
-    color = fg("grey_30")
-    output = "EXCEPTION"
-
-data_output.append({
-    'title': 'Uptime',
-    'value': output,
-    'color': color
-})
+    add_error_entry("Uptime", "EXCEPTION")
 
 
 #
@@ -299,11 +292,7 @@ try:
         })
 
 except:
-    data_output.append({
-        'title': 'Uptime',
-        'value': "EXCEPTION",
-        'color': fg("grey_30")
-    })
+    add_error_entry("CPU", "EXCEPTION")
 
 
 #
@@ -312,7 +301,6 @@ except:
 if __psutil__:
     try:
         statuses = {}
-        color = fg("white")
         for proc in psutil.process_iter():
             try:
                 status = proc.status()
@@ -327,19 +315,17 @@ if __psutil__:
             else:
                 output = "{0}, {1} {2}".format(output, count, status)
 
+        data_output.append({
+            'title': "Processes",
+            'value': output,
+            'color': fg("white")
+        })
+
     except:
-        color = fg("grey_30")
-        output = "EXCEPTION"
+        add_error_entry("Processes", "EXCEPTION")
 
 else:
-    color = fg("grey_30")
-    output = "MISSING PYTHON PSUTIL"
-
-data_output.append({
-    'title': "Processes",
-    'value': output,
-    'color': color
-})
+    add_error_entry("Processes", "MISSING PYTHON PSUTIL")
 
 
 #
@@ -359,17 +345,15 @@ try:
             color_loadavg(midterm),
             color_loadavg(longterm)
         )
-    color = fg("white")
+
+    data_output.append({
+        'title': 'System Load',
+        'value': output,
+        'color': fg("white")
+    })
 
 except:
-    color = fg("grey_30")
-    output = "EXCEPTION"
-
-data_output.append({
-    'title': 'System Load',
-    'value': output,
-    'color': color
-})
+    add_error_entry("System Load", "EXCEPTION")
 
 
 #
@@ -390,15 +374,14 @@ try:
         format_filesize(total)
     )
 
-except:
-    color = fg("grey_30")
-    output = "EXCEPTION"
+    data_output.append({
+        'title': 'Memory usage',
+        'value': output,
+        'color': color
+    })
 
-data_output.append({
-    'title': 'Memory usage',
-    'value': output,
-    'color': color
-})
+except:
+    add_error_entry("Memory usage", "EXCEPTION")
 
 
 #
@@ -423,19 +406,17 @@ if __psutil__:
             color = fg("red")
             output = "Swap not in use."
 
+        data_output.append({
+            'title': "Swap usage",
+            'value': output,
+            'color': color
+        })
+
     except:
-        color = fg("grey_30")
-        output = "EXCEPTION"
+        add_error_entry("Disk usage", "EXCEPTION")
 
 else:
-    color = fg("grey_30")
-    output = "MISSING PYTHON PSUTIL"
-
-data_output.append({
-    'title': "Swap usage",
-    'value': output,
-    'color': color
-})
+    add_error_entry("Disk usage", "MISSING PYTHON PSUTIL")
 
 
 #
@@ -455,19 +436,17 @@ if __psutil__:
                 format_filesize(usage.total)
             )
 
+            data_output.append({
+                'title': "Disk usage",
+                'value': output,
+                'color': color
+            })
+
     except:
-        color = fg("grey_30")
-        output = "EXCEPTION"
+        add_error_entry("Disk usage", "EXCEPTION")
 
 else:
-    output = "MISSING PYTHON PSUTIL",
-    color = fg("grey_30")
-
-data_output.append({
-    'title': "Disk usage",
-    'value': output,
-    'color': color
-})
+    add_error_entry("Disk usage", "MISSING PYTHON PSUTIL")
 
 
 #
@@ -498,18 +477,14 @@ try:
         s.close()
 
     if ip and iface:
-        output = "{0}({1}) gw {2}".format(ip, iface, gw)
-        color = fg("white")
+        data_output.append({
+            'title': "Network",
+            'value': "{0}({1}) gw {2}".format(ip, iface, gw),
+            'color': fg("white")
+        })
 
 except:
-    color = fg("grey_30")
-    output = "EXCEPTION"
-
-data_output.append({
-    'title': "Network",
-    'value': output,
-    'color': color
-})
+    add_error_entry("Network", "EXCEPTION")
 
 
 #
@@ -528,22 +503,17 @@ if __psutil__:
             else:
                 output = "{0}, {1}".format(user, output)
 
-        output = "#{0} ({1})".format(len(users), output)
-        color = fg("white")
+        data_output.append({
+            'title': "Logged users",
+            'value': "#{0} ({1})".format(len(users), output),
+            'color': fg("white")
+        })
 
     except:
-        color = fg("grey_30")
-        output = "EXCEPTION"
+        add_error_entry("Network", "EXCEPTION")
 
 else:
-    output = "MISSING PYTHON PSUTIL"
-    color = fg("grey_30")
-
-data_output.append({
-    'title': "Logged users",
-    'value': output,
-    'color': color
-})
+    add_error_entry("Network", "MISSING PYTHON PSUTIL")
 
 
 #
