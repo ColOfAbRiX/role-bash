@@ -166,274 +166,325 @@ def file_entry(file_path, regex, default=()):
     return default
 
 
+def add_error_entry(title, description):
+    """
+    Builds and entry marked as error
+    """
+    global data_output
+
+    data_output.append({
+        'title': title,
+        'value': output,
+        'color': fg("grey_30")
+    })
+
+
 data_output = []
 
 
 #
 # Date and time
 #
-now = datetime.datetime.now()
-time_string = "{0} {1:04d}-{2:02d}-{3:02d} {4:02d}:{5:02d}:{6:02d}.{7:d} {8:+03d}{9}".format(
-    now.strftime('%a'),
-    now.year, now.month, now.day,
-    now.hour, now.minute, now.second, now.microsecond,
-    time.timezone if (time.localtime().tm_isdst == 0) else time.altzone / 60 / 60 * -1,
-    time.tzname[time.daylight]
-)
-data_output.append({
-    'title': 'Time',
-    'value': time_string,
-    'color': fg("white")
-})
+try:
+    now = datetime.datetime.now()
+    time_string = "{0} {1:04d}-{2:02d}-{3:02d} {4:02d}:{5:02d}:{6:02d}.{7:d} {8:+03d}{9}".format(
+        now.strftime('%a'),
+        now.year, now.month, now.day,
+        now.hour, now.minute, now.second, now.microsecond,
+        time.timezone if (time.localtime().tm_isdst == 0) else time.altzone / 60 / 60 * -1,
+        time.tzname[time.daylight]
+    )
+    data_output.append({
+        'title': 'Time',
+        'value': time_string,
+        'color': fg("white")
+    })
+
+except:
+    add_error_entry("Time", "EXCEPTION")
 
 
 #
 # Linux distribution
 #
-dist, ver, _ = platform.linux_distribution(full_distribution_name=True)
-data_output.append({
-    'title': 'Linux',
-    'value': "{0} {1}".format(dist, ver),
-    'color': fg("white")
-})
+try:
+    dist, ver, _ = platform.linux_distribution(full_distribution_name=True)
+    data_output.append({
+        'title': 'Linux',
+        'value': "{0} {1}".format(dist, ver),
+        'color': fg("white")
+    })
+
+except:
+    add_error_entry("Linux", "EXCEPTION")
 
 
 #
 # Provisioner information
 #
 if os.environ.get('MACHINE_ENV', '') != '':
-    machine_env = os.environ['MACHINE_ENV'].strip().lower()
-    machine_env_desc = os.environ.get('MACHINE_ENV_DESC', machine_env).strip()
+    try:
+        machine_env = os.environ['MACHINE_ENV'].strip().lower()
 
-    color = fg("white")
-    if machine_env == 'int':
-        color = fg("light_yellow")
-    elif machine_env == 'prd':
-        color = fg("light_red")
+        color = fg("white")
+        if machine_env == 'int':
+            color = fg("light_yellow")
+        elif machine_env == 'prd':
+            color = fg("light_red")
 
-    data_output.append({
-        'title': 'Environment',
-        'value': machine_env_desc,
-        'color': color
-    })
+        data_output.append({
+            'title': 'Environment',
+            'value': os.environ.get('MACHINE_ENV_DESC', machine_env).strip(),
+            'color': color
+        })
+
+    except:
+        add_error_entry("Environment", "EXCEPTION")
 
 if os.environ.get('MACHINE_DC', '') != '':
-    machine_dc = os.environ['MACHINE_DC'].strip().lower()
-    machine_dc_desc = os.environ.get('MACHINE_DC_DESC', machine_dc).strip()
+    try:
+        machine_dc = os.environ['MACHINE_DC'].strip().lower()
+        data_output.append({
+            'title': 'Datacenter',
+            'value': os.environ.get('MACHINE_DC_DESC', machine_dc).strip(),
+            'color': fg("white")
+        })
 
-    data_output.append({
-        'title': 'Datacenter',
-        'value': machine_dc_desc,
-        'color': fg("white")
-    })
+    except:
+        add_error_entry("Datacenter", "EXCEPTION")
 
 
 #
 # Uptime
 #
-uptime = file_entry('/proc/uptime', r'^([\d.]+)')[0]
-uptime_string = format_timedelta(round(float(uptime)))
+try:
+    uptime = file_entry('/proc/uptime', r'^([\d.]+)')[0]
+    data_output.append({
+        'title': 'Uptime',
+        'value': format_timedelta(round(float(uptime))),
+        'color': fg("white")
+    })
 
-data_output.append({
-    'title': 'Uptime',
-    'value': uptime_string,
-    'color': fg("white")
-})
+except:
+    add_error_entry("Uptime", "EXCEPTION")
 
 
 #
 # CPU Info
 #
-cpus = {}
-with open("/proc/cpuinfo") as f:
-    for line in f.readlines():
-        search = re.search(
-            r'^\s*model name\s*:\s*(.*)$',
-            line,
-            re.IGNORECASE
-        )
-        if search:
-            cpus[search.group(1)] = cpus.get(search.group(1), 0) + 1
+try:
+    cpus = {}
+    with open("/proc/cpuinfo") as f:
+        for line in f.readlines():
+            search = re.search(
+                r'^\s*model name\s*:\s*(.*)$',
+                line,
+                re.IGNORECASE
+            )
+            if search:
+                cpus[search.group(1)] = cpus.get(search.group(1), 0) + 1
 
-for cpu, count in cpus.iteritems():
-    data_output.append({
-        'title': "CPU",
-        'value': "%s x %s" % (str(count), cpu),
-        'color': fg("white")
-    })
+    for cpu, count in cpus.iteritems():
+        data_output.append({
+            'title': "CPU",
+            'value': "%s x %s" % (str(count), cpu),
+            'color': fg("white")
+        })
+
+except:
+    add_error_entry("CPU", "EXCEPTION")
 
 
 #
 # Processes
 #
 if __psutil__:
-    statuses = {}
-    color = fg("white")
-    for proc in psutil.process_iter():
-        try:
-            status = proc.status()
-            statuses[status] = statuses.get(status, 0) + 1
-        except psutil.NoSuchProcess:
-            pass
+    try:
+        statuses = {}
+        for proc in psutil.process_iter():
+            try:
+                status = proc.status()
+                statuses[status] = statuses.get(status, 0) + 1
+            except psutil.NoSuchProcess:
+                pass
 
-    output = ""
-    for status, count in statuses.iteritems():
-        if output == "":
-            output = "{0} {1}".format(count, status)
-        else:
-            output = "{0}, {1} {2}".format(output, count, status)
+        output = ""
+        for status, count in statuses.iteritems():
+            if output == "":
+                output = "{0} {1}".format(count, status)
+            else:
+                output = "{0}, {1} {2}".format(output, count, status)
+
+        data_output.append({
+            'title': "Processes",
+            'value': output,
+            'color': fg("white")
+        })
+
+    except:
+        add_error_entry("Processes", "EXCEPTION")
 
 else:
-    color = fg("grey")
-    output = "MISSING PYTHON PSUTIL"
-
-data_output.append({
-    'title': "Processes",
-    'value': output,
-    'color': color
-})
+    add_error_entry("Processes", "MISSING PYTHON PSUTIL")
 
 
 #
 # CPU Load
 #
-cpuload = file_entry('/proc/loadavg', r'^([\d.]+) ([\d.]+) ([\d.]+)')
-shortterm = float(cpuload[0])
-midterm   = float(cpuload[1])
-longterm  = float(cpuload[2])
+try:
+    cpuload = file_entry('/proc/loadavg', r'^([\d.]+) ([\d.]+) ([\d.]+)')
+    shortterm = float(cpuload[0])
+    midterm   = float(cpuload[1])
+    longterm  = float(cpuload[2])
 
-text = (
-    "{0}" + fg("white") + "(1min), "
-    "{1}" + fg("white") + "(5min), "
-    "{2}" + fg("white") + "(15min)").format(
-        color_loadavg(shortterm),
-        color_loadavg(midterm),
-        color_loadavg(longterm)
-    )
+    output = (
+        "{0}" + fg("white") + "(1min), "
+        "{1}" + fg("white") + "(5min), "
+        "{2}" + fg("white") + "(15min)").format(
+            color_loadavg(shortterm),
+            color_loadavg(midterm),
+            color_loadavg(longterm)
+        )
 
-data_output.append({
-    'title': 'System Load',
-    'value': text,
-    'color': fg("white")
-})
+    data_output.append({
+        'title': 'System Load',
+        'value': output,
+        'color': fg("white")
+    })
+
+except:
+    add_error_entry("System Load", "EXCEPTION")
 
 
 #
 # Memory usage
 #
-total = file_entry('/proc/meminfo', r'^MemTotal:\s*(\d+)')[0]
-avail = file_entry('/proc/meminfo', r'^MemAvailable:\s*(\d+)')[0]
+try:
+    total = file_entry('/proc/meminfo', r'^MemTotal:\s*(\d+)')[0]
+    avail = file_entry('/proc/meminfo', r'^MemAvailable:\s*(\d+)')[0]
 
-total = float(total) * 1024.0
-used = total - float(avail) * 1024.0
-percent_used = used / total
+    total = float(total) * 1024.0
+    used = total - float(avail) * 1024.0
+    percent_used = used / total
 
-color = color_level(percent_used, min_value=0.5)
-output = "{0:.1f}% ({1} used of {2})".format(
-    percent_used * 100,
-    format_filesize(used),
-    format_filesize(total)
-)
+    color = color_level(percent_used, min_value=0.5)
+    output = "{0:.1f}% ({1} used of {2})".format(
+        percent_used * 100,
+        format_filesize(used),
+        format_filesize(total)
+    )
 
-data_output.append({
-    'title': "Memory usage",
-    'value': output,
-    'color': color
-})
+    data_output.append({
+        'title': 'Memory usage',
+        'value': output,
+        'color': color
+    })
+
+except:
+    add_error_entry("Memory usage", "EXCEPTION")
 
 
 #
 # Swap usage
 #
 if __psutil__:
-    swap = psutil.swap_memory()
-    total = swap.total
-    used = swap.total - swap.free
+    try:
+        swap = psutil.swap_memory()
+        total = swap.total
+        used = swap.total - swap.free
 
-    if total > 0.0:
-        percent_used = float(used) / float(total)
-        color = color_level(percent_used, min_value=0.05, max_value=0.5)
-        output = "{0:.1f}% ({1} used of {2})".format(
-            percent_used * 100,
-            format_filesize(used),
-            format_filesize(total)
-        )
+        if total > 0.0:
+            percent_used = float(used) / float(total)
+            color = color_level(percent_used, min_value=0.05, max_value=0.5)
+            output = "{0:.1f}% ({1} used of {2})".format(
+                percent_used * 100,
+                format_filesize(used),
+                format_filesize(total)
+            )
 
-    else:
-        color = fg("red")
-        output = "Swap not in use."
+        else:
+            color = fg("red")
+            output = "Swap not in use."
+
+        data_output.append({
+            'title': "Swap usage",
+            'value': output,
+            'color': color
+        })
+
+    except:
+        add_error_entry("Disk usage", "EXCEPTION")
 
 else:
-    color = fg("grey")
-    output = "MISSING PYTHON PSUTIL"
-
-data_output.append({
-    'title': "Swap usage",
-    'value': output,
-    'color': color
-})
+    add_error_entry("Disk usage", "MISSING PYTHON PSUTIL")
 
 
 #
 # Disks usage
 #
 if __psutil__:
-    for partition in psutil.disk_partitions():
-        usage = psutil.disk_usage(partition.mountpoint)
-        percent_used = float(usage.used) / float(usage.total)
+    try:
+        for partition in psutil.disk_partitions():
+            usage = psutil.disk_usage(partition.mountpoint)
+            percent_used = float(usage.used) / float(usage.total)
 
-        color = color_level(percent_used, min_value=0.6)
-        output = "{0:.1f}% on {1} ({2} used of {3})".format(
-            percent_used * 100,
-            partition.mountpoint,
-            format_filesize(usage.used),
-            format_filesize(usage.total)
-        )
+            color = color_level(percent_used, min_value=0.6)
+            output = "{0:.1f}% on {1} ({2} used of {3})".format(
+                percent_used * 100,
+                partition.mountpoint,
+                format_filesize(usage.used),
+                format_filesize(usage.total)
+            )
 
-        data_output.append({
-            'title': "Disk usage",
-            'value': output,
-            'color': color
-        })
+            data_output.append({
+                'title': "Disk usage",
+                'value': output,
+                'color': color
+            })
+
+    except:
+        add_error_entry("Disk usage", "EXCEPTION")
 
 else:
-    data_output.append({
-        'title': "Disk usage",
-        'value': "MISSING PYTHON PSUTIL",
-        'color': fg("grey")
-    })
+    add_error_entry("Disk usage", "MISSING PYTHON PSUTIL")
 
 
 #
 # Network info
 #
 
-# Default interface and gateway
-iface = None
-with open("/proc/net/route") as f:
-    for line in f.readlines():
-        try:
-            iface, dest, gateway, flags, _, _, _, _, _, _, _, =  line.strip().split()
-            if dest != '00000000' or not int(flags, 16) & 2:
-                continue
-            gw = socket.inet_ntoa(struct.pack("<L", int(gateway, 16)))
-        except:
-            continue
-
-# IP Address and netmask
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 try:
-    s.connect(('10.255.255.255', 0)) # Doesn't even have to be reachable
-    ip = s.getsockname()[0]
-finally:
-    s.close()
+    # Default interface and gateway
+    iface = None
+    with open("/proc/net/route") as f:
+        for line in f.readlines():
+            try:
+                iface, dest, gateway, flags, _, _, _, _, _, _, _, =  line.strip().split()
+                if dest != '00000000' or not int(flags, 16) & 2:
+                    continue
+                gw = socket.inet_ntoa(struct.pack("<L", int(gateway, 16)))
+            except:
+                continue
 
-if ip and iface:
-    data_output.append({
-        'title': "Network",
-        'value': "{0}({1}) gw {2}".format(ip, iface, gw),
-        'color': fg("white")
-    })
+    # IP Address and netmask
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(('10.255.255.255', 0)) # Doesn't even have to be reachable
+        ip = s.getsockname()[0]
+    except:
+        pass
+    finally:
+        s.close()
+
+    if ip and iface:
+        data_output.append({
+            'title': "Network",
+            'value': "{0}({1}) gw {2}".format(ip, iface, gw),
+            'color': fg("white")
+        })
+
+except:
+    add_error_entry("Network", "EXCEPTION")
 
 
 #
@@ -441,28 +492,28 @@ if ip and iface:
 #
 users = {}
 if __psutil__:
-    for user in psutil.users():
-        users[user.name] = users.get(user.name, 0) + 1
+    try:
+        for user in psutil.users():
+            users[user.name] = users.get(user.name, 0) + 1
 
-    output = ""
-    for user, count in users.iteritems():
-        if output == "":
-            output = user
-        else:
-            output = "{0}, {1}".format(user, output)
+        output = ""
+        for user, count in users.iteritems():
+            if output == "":
+                output = user
+            else:
+                output = "{0}, {1}".format(user, output)
 
-    data_output.append({
-        'title': "Logged users",
-        'value': "#{0} ({1})".format(len(users), output),
-        'color': fg("white")
-    })
+        data_output.append({
+            'title': "Logged users",
+            'value': "#{0} ({1})".format(len(users), output),
+            'color': fg("white")
+        })
+
+    except:
+        add_error_entry("Network", "EXCEPTION")
 
 else:
-    data_output.append({
-        'title': "Logged users",
-        'value': "MISSING PYTHON PSUTIL",
-        'color': fg("grey")
-    })
+    add_error_entry("Network", "MISSING PYTHON PSUTIL")
 
 
 #

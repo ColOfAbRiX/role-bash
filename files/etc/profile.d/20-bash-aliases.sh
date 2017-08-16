@@ -113,6 +113,8 @@ alias pscpu='ps $PS_HEADER --sort -%cpu'
 alias pscpu10='pscpu | head -10'
 # Display tree of processes
 alias pst='pstree $PSTREE_OPTIONS'
+# Display directory sizes
+alias dirsizes='du -hd1 . 2> /dev/null | sort -h'
 
 #
 # Hashes
