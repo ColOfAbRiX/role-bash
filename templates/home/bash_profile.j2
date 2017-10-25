@@ -11,7 +11,7 @@ fi
 
 # User specific environment and startup programs
 
-PATH=$PATH:$HOME/.local/bin:$HOME/bin{% if user.path is defined and user.path != [] %}{{ user.path | join(':') }}{% endif %}
+PATH=$HOME/bin:$HOME/.local/bin:{% if user.path is defined and user.path != [] %}{{ user.path | join(':') }}{% endif %}:$PATH
 
 export PATH
 
