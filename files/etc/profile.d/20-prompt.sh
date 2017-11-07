@@ -122,6 +122,10 @@ _set_prompt() {
     IFS=$oIFS
 }
 
+# Prompt in VI Mode
+set -o vi
+
+# Custom prompt
 export PROMPT_COMMAND="_set_prompt"
 
 # vim: ft=sh:ts=4:sw=4

@@ -33,9 +33,6 @@ export PS_HEADER="aux"
 export NETSTAT_OPTIONS="-tulpn"
 export PSTREE_OPTIONS="'paulh"
 
-# BASH in VI Mode
-set -o vi
-
 #
 # File system
 #
@@ -53,11 +50,11 @@ alias j='jobs -l'
 alias c='clear'
 alias cd..='cd ..'
 alias ..='cd ..'
-alias ...='cd ../../../'
-alias ....='cd ../../../../'
+alias ...='cd ../../'
+alias ....='cd ../../../'
 alias .....='cd ../../../../'
-alias .4='cd ../../../../'
-alias .5='cd ../../../../..'
+alias ..4='cd ../../../../../'
+alias ..5='cd ../../../../../../'
 alias less='less -r'
 
 #
