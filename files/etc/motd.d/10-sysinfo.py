@@ -174,7 +174,7 @@ def add_error_entry(title, description):
 
     data_output.append({
         'title': title,
-        'value': output,
+        'value': description,
         'color': fg("grey_30")
     })
 

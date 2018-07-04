@@ -15,7 +15,7 @@
    - /etc/profile.d/colorls.csh
   tags: bash
 
-- name: "Configuration Files"
+- name: "Copy configuration Files"
   copy:
     src:   etc/profile.d
     dest:  /etc
@@ -24,37 +24,9 @@
     directory_mode: '0755'
   tags: bash
 
-- name: "Restricted BASH"
-  file:
-    src:    /bin/bash
-    dest:   /bin/rbash
-    state:  link
-    force:  yes
-    owner:  root
-    group:  root
-    mode:   '0777'
-    seuser: system_u
-    serole: object_r
-    setype: shell_exec_t
-  tags: bash
-
 - name: "Login Script"
   copy: src=etc/bashrc dest=/etc/bashrc force=yes mode='0644'
   tags: bash
-
-- name: "MOTD Directory"
-  file: path=/etc/motd.d state=directory mode='0755'
-  tags: bash
-
-- name: "Message of the Day Files"
-  copy:
-    src:  etc/motd.d
-    dest: /etc
-    mode: '0755'
-    force: yes
-    directory_mode: '0755'
-  tags: bash
-
 
 - name: "Global Configuration Files"
   template:
@@ -63,9 +35,13 @@
     mode: '0644'
     force: yes
   with_items:
-   - motd.d/motd
    - profile.d/00-provisioner-vars.sh
    - profile.d/99-host-overrides.sh
+  tags: bash
+
+- name: "Deploy Custom MOTD"
+  include: motd.yml
+  when: bash_custom_motd | default(True)
   tags: bash
 
 - name: "User Configuration Files"
@@ -73,7 +49,7 @@
   become_user: "{{ user.username }}"
   include: user.yml
   with_items:
-   - "{{ system_users | default([]) }}"
+   - "{{ bash_users | default([]) }}"
   loop_control:
     loop_var: user
   tags: bash
