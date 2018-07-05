@@ -1,7 +1,7 @@
-Role Name
+role-bash
 =========
 
-A brief description of the role goes here.
+Ansible role to configure BASH settings
 
 Requirements
 ------------

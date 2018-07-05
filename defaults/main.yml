@@ -3,19 +3,22 @@
 # Login Message of the Day
 bash_login_motd: ""
 
-# Script that runs after all other custom scripts have run
-bash_host_overrides: ""
-
 # If set to true it deploys a custom advanced MOTD
-bash_custom_motd: true
+bash_advanced_motd: true
+
+# Bash scripts on /etc/profile.d
+bash_profile_d: []
+# # Example of adding a new profile script for a simple umask
+# - name: test_file
+#   content: |
+#     umask 0002
 
 # Bash customizations for users
-#
-# bash_users:
-#  - username: user1
-#    bashrc: |
-#      echo "This is the ~/.bashrc file."
-#    bash_profile: |
-#      echo "This is the ~/.bash_profile file."
-#    path: ["$HOME/my_custom_app"]
 bash_users: []
+# # Example of custom profile scripts and custom PATH
+# - username: user1
+#   bashrc: |
+#     echo "This is the ~/.bashrc file."
+#   bash_profile: |
+#     echo "This is the ~/.bash_profile file."
+#   path: ["$HOME/my_custom_app"]

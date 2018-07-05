@@ -15,6 +15,10 @@
    - /etc/profile.d/colorls.csh
   tags: bash
 
+- name: "Login Script"
+  copy: src=etc/bashrc dest=/etc/bashrc force=yes mode='0644'
+  tags: bash
+
 - name: "Copy configuration Files"
   copy:
     src:   etc/profile.d
@@ -24,24 +28,31 @@
     directory_mode: '0755'
   tags: bash
 
-- name: "Login Script"
-  copy: src=etc/bashrc dest=/etc/bashrc force=yes mode='0644'
-  tags: bash
-
-- name: "Global Configuration Files"
+- name: "Global profile.d Scripts"
   template:
-    src:  "etc/{{ item }}.j2"
-    dest: "/etc/{{ item }}"
+    src:  "etc/profile.d/{{ item }}.j2"
+    dest: "/etc/profile.d/{{ item }}"
     mode: '0644'
     force: yes
   with_items:
-   - profile.d/00-provisioner-vars.sh
-   - profile.d/99-host-overrides.sh
+   - 00-provisioner-vars.sh
   tags: bash
 
-- name: "Deploy Custom MOTD"
+- name: "Custom profile.d Scripts"
+  template:
+    src:  "etc/profile.d/script.sh.j2"
+    dest: "/etc/profile.d/{{ profile_script.name }}.sh"
+    mode: '0644'
+    force: yes
+  with_items:
+   - "{{ bash_profile_d | default([]) }}"
+  loop_control:
+    loop_var: profile_script
+  tags: bash
+
+- name: "Advanced MOTD"
   include: motd.yml
-  when: bash_custom_motd | default(True)
+  when: bash_advanced_motd | default(True)
   tags: bash
 
 - name: "User Configuration Files"
