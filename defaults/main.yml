@@ -3,8 +3,16 @@
 # Login Message of the Day
 bash_login_motd: ""
 
-# If set to true it deploys a custom advanced MOTD
-bash_advanced_motd: true
+# List of enabled advanced features (comment/uncomment to enable or disable them)
+bash_advanced_features: []
+# - 00-colours.sh
+# - 10-history.sh
+# - 11-history2syslog.sh
+# - 20-autocomplete.sh
+# - 20-bash-aliases.sh
+# - 20-colorls.sh
+# - 20-prompt.sh
+# - 90-motd.sh
 
 # Bash scripts on /etc/profile.d
 bash_profile_d: []
@@ -17,8 +25,15 @@ bash_profile_d: []
 bash_users: []
 # # Example of custom profile scripts and custom PATH
 # - username: user1
+#   # This tells the role that we are configuring BASH
+#   shell: /bin/bash
+#   # Literal code to add to ~/.bashrc. If omitted the .bashrc file will not
+#   # be touched.
 #   bashrc: |
 #     echo "This is the ~/.bashrc file."
+#   # Literal code to add to ~/.bash_profile. If omitted the .bash_profile file
+#   # will not be touched.
 #   bash_profile: |
 #     echo "This is the ~/.bash_profile file."
+#   # Additinal PATH directories
 #   path: ["$HOME/my_custom_app"]

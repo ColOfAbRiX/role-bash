@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# Custom Prompt for BASH
+# Custom advanced prompt for BASH
 #
 
 # Skip all for noninteractive shells.

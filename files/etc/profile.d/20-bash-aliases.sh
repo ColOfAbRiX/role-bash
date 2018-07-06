@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# System-wide, custom .bashrc file configuration
+# Custom global bash aliases
 #
 
 # Skip all for noninteractive shells.
@@ -91,12 +91,20 @@ alias sfollow='sudo follow'
 # Resources info
 #
 # Display open ports on the external interface
-alias ports='netstat $NETSTAT_OPTIONS | egrep -ve "127.0.0.1" -e "p6"'
+alias ports4='netstat $NETSTAT_OPTIONS | egrep -ve "127.0.0.1" -e "(tcp6|udp6)\b" | sort'
+alias ports6='netstat $NETSTAT_OPTIONS | egrep -ve "127.0.0.1" -e "(tcp|udp)\b" | sort'
+alias ports='netstat $NETSTAT_OPTIONS | egrep -ve "127.0.0.1" | sort'
 # Display open ports on the external and local interface
-alias portsa='netstat $NETSTAT_OPTIONS | egrep -ve "p6"'
+alias portsa4='netstat $NETSTAT_OPTIONS | egrep -ve "(tcp6|udp6)\b" | sort'
+alias portsa6='netstat $NETSTAT_OPTIONS | egrep -ve "(tcp|udp)\b" | sort'
+alias portsa='netstat $NETSTAT_OPTIONS  | sort'
 # Look for an open ports on the external interface
+alias port4='ports4 | egrep -i '
+alias port6='ports6 | egrep -i '
 alias port='ports | egrep -i '
 # Look for an open ports on the external and local interface
+alias porta4='portsa4 | egrep -i '
+alias porta6='portsa6 | egrep -i '
 alias porta='portsa | egrep -i '
 # Display memory infomration
 alias meminfo='free -m -l -t; echo; cat /proc/meminfo | grep -i HugePages | cat'
@@ -131,6 +139,7 @@ alias chown='chown --preserve-root'
 alias chmod='chmod --preserve-root'
 alias chgrp='chgrp --preserve-root'
 alias srm='sudo rm'
+alias scat='sudo cat'
 
 #
 # Editing
@@ -144,8 +153,8 @@ alias scat='sudo cat'
 #
 # Hardening
 #
-alias sudo='sudo '
-alias su="echo \"Always use '/bin/su –' for security reasons\""
+#alias sudo='sudo '
+#alias su="echo \"Always use '/bin/su –' for security reasons\""
 
 #
 # Various

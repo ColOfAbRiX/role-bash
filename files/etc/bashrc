@@ -33,8 +33,12 @@ if [ "$PS1" ]; then
       ;;
     esac
   fi
-
-  #[ "$PS1" = "\\s-\\v\\\$ " ] && PS1="[\u@\h \W]\\$ "
+  # Turn on parallel history
+  shopt -s histappend
+  history -a
+  # Turn on checkwinsize
+  shopt -s checkwinsize
+  [ "$PS1" = "\\s-\\v\\\$ " ] && PS1="[\u@\h \W]\\$ "
   # You might want to have e.g. tty in prompt (e.g. more virtual machines)
   # and console windows
   # If you want to do so, just add e.g.
@@ -63,7 +67,7 @@ if ! shopt -q login_shell ; then # We're not a login shell
     # Current threshold for system reserved uid/gids is 200
     # You could check uidgid reservation validity in
     # /usr/share/doc/setup-*/uidgid file
-    if [ $UID -gt 199 ] && [ "`id -gn`" = "`id -un`" ]; then
+    if [ $UID -gt 199 ] && [ "`/usr/bin/id -gn`" = "`/usr/bin/id -un`" ]; then
        umask 002
     else
        umask 022

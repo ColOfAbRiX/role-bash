@@ -1,6 +1,6 @@
 ---
 
-- name: "User Scripts"
+- name: "BASH User Scripts"
   template:
     src:    "home/{{ item }}.j2"
     dest:   "~/.{{ item }}"
@@ -9,7 +9,8 @@
     seuser: system_u
     serole: object_r
     setype: user_home_t
-  when: user.shell | default('/bin/bash') == '/bin/bash'
+  when: user.shell | default('/bin/bash') == '/bin/bash' and
+        user[item] is defined
   with_items:
    - bashrc
    - bash_profile
