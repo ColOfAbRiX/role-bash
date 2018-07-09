@@ -41,16 +41,16 @@
     loop_var: user
   tags: bash
 
-- name: "Files Permissions"
-  file:
-    path:   "{{ item }}"
-    owner:  root
-    group:  root
-    seuser: system_u
-    serole: object_r
-    setype: etc_t
-  with_items:
-    - /etc/profile.d
-    - /etc/motd.d
-    - /etc/bashrc
-  tags: bash
+# - name: "Files Permissions"
+#   file:
+#     path:   "{{ item }}"
+#     owner:  root
+#     group:  root
+#     seuser: system_u
+#     serole: object_r
+#     setype: etc_t
+#   with_items:
+#     - /etc/profile.d
+#     - /etc/motd.d
+#     - /etc/bashrc
+#   tags: bash
