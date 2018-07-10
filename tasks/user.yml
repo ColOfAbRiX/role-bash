@@ -1,6 +1,6 @@
 ---
 
-- name: "BASH User Scripts"
+- name: "Install User Scripts for {{ item }}"
   template:
     src:    "home/{{ item }}.j2"
     dest:   "~/.{{ item }}"
