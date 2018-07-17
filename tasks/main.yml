@@ -3,7 +3,8 @@
 
 - name: "Require Correct Linux Distribution"
   assert:
-    that: ansible_distribution | lower in ['redhat', 'centos']
+    that: ansible_distribution == 'RedHat' and \
+          ansible_distribution_major_version in [6, 7]
     msg:  "This Linux distrution is not supported by the role."
   tags: bash
 
