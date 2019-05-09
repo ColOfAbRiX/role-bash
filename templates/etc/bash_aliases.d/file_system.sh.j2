@@ -23,9 +23,33 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# Custom scripts
+# Aliases for the file system
 #
 
-{{ profile_script.content | default('') }}
+# Skip all for noninteractive shells.
+[ -z "$PS1" -o ! -t 1 ] && return
+
+eval "$(dircolors)"
+alias ls='ls --color=auto'
+
+# List with full details
+alias l='ls -l'
+# List with full details and hidden files
+alias ll='ls -la'
+# List with details and order by last modification
+alias lt='ls -ltr'
+
+alias l.='ls -d .*'
+alias h='history'
+alias j='jobs -l'
+alias c='clear'
+alias cd..='cd ..'
+alias ..='cd ..'
+alias ...='cd ../../../'
+alias ....='cd ../../../../'
+alias .....='cd ../../../../'
+alias .4='cd ../../../../'
+alias .5='cd ../../../../..'
+alias less='less -r'
 
 # vim: ft=sh:ts=4:sw=4

@@ -23,9 +23,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# Custom scripts
+# Bash History to Syslog
 #
 
-{{ profile_script.content | default('') }}
+# Skip all for noninteractive shells.
+[ -z "$PS1" -o ! -t 1 ] && return
+
+function trim
+{
+    echo "$(echo "$*" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+}
+
+function _history2syslog
+{
+    cmd=$(history 1 | awk '{ print substr($0, 26) }')
+
+    if [[ "$cmd" != "$old_command" ]] ; then       # Don't log duplicates
+        logger -p "local7.notice" -t "shell[$$]" -- "Host: $REMOTE_HOST, User: $LOGNAME, PWD: $(pwd), CMD: $(trim "$cmd")"
+    fi
+
+    old_command=$cmd
+}
+
+# User remote host
+REMOTE_HOST=$(who am i | sed -nre 's/^.*\(([^)]+)\).*/\1/p')
+
+trap _history2syslog DEBUG || EXIT
 
 # vim: ft=sh:ts=4:sw=4

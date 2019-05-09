@@ -3,16 +3,13 @@
 # Login Message of the Day
 bash_login_motd: ""
 
-# List of enabled advanced features (comment/uncomment to enable or disable them)
-bash_advanced_features: []
-# - 00-colours.sh
-# - 10-history.sh
-# - 11-history2syslog.sh
-# - 20-autocomplete.sh
-# - 20-bash-aliases.sh
-# - 20-colorls.sh
-# - 20-prompt.sh
-# - 90-motd.sh
+bash_features:
+ - aliases
+ - autocomplete
+ - history
+ - history2syslog
+ - motd
+ - prompt
 
 # Bash scripts on /etc/profile.d
 bash_profile_d: []

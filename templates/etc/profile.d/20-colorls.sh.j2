@@ -23,9 +23,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# Custom scripts
+# color-ls initialization
 #
 
-{{ profile_script.content | default('') }}
+# Skip all for noninteractive shells.
+[ -z "$PS1" -o ! -t 1 ] && return
+
+for dircolor_file in "/etc/.dir_colors.$TERM" "/etc/.dircolors.$TERM" "/etc/.dir_colors" "/etc/.dircolors" "$HOME/.dir_colors.$TERM" "$HOME/.dircolors.$TERM" "$HOME/.dir_colors" "$HOME/.dircolors"; do
+	[ -f "$dircolor_file" ] && eval $(dircolors "$dircolor_file")
+done
+
+unset TMP COLORS INCLUDE
 
 # vim: ft=sh:ts=4:sw=4

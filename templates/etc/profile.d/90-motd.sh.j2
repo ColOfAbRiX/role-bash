@@ -1,8 +1,9 @@
 #!/bin/bash
+# {{ ansible_managed }}
 #
 # MIT License
 #
-# Copyright (c) 2017 Fabrizio Colonna <colofabrix@tin.it>
+# Copyright (c) 2017, 2018, 2019 Fabrizio Colonna <colofabrix@tin.it>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,31 +23,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# Bash History to Syslog
+# Load custom MOTD scripts from /etc/motd.d
 #
 
 # Skip all for noninteractive shells.
 [ -z "$PS1" -o ! -t 1 ] && return
 
-function trim
-{
-    echo "$(echo "$*" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-}
+# Skip when explicitly instructed
+[ "$SKIP_MOTD" == "true" ] && return
 
-function _history2syslog
-{
-    cmd=$(history 1 | awk '{ print substr($0, 26) }')
-
-    if [[ "$cmd" != "$old_command" ]] ; then       # Don't log duplicates
-        logger -p "local7.notice" -t "shell[$$]" -- "Host: $REMOTE_HOST, User: $LOGNAME, PWD: $(pwd), CMD: $(trim "$cmd")"
-    fi
-
-    old_command=$cmd
-}
-
-# User remote host
-REMOTE_HOST=$(who am i | sed -nre 's/^.*\(([^)]+)\).*/\1/p')
-
-trap _history2syslog DEBUG || EXIT
+# Show MOTD only for interactive shells
+if [ -t 1 ] && [ -d /etc/motd.d ] ; then
+    for FILE in /etc/motd.d/* ; do
+        [ $FILE != "motd" -a -x $FILE ] && $FILE
+    done
+fi
 
 # vim: ft=sh:ts=4:sw=4

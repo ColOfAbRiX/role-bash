@@ -23,9 +23,29 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# Custom scripts
+# Aliases for security and safety
 #
 
-{{ profile_script.content | default('') }}
+# Skip all for noninteractive shells.
+[ -z "$PS1" -o ! -t 1 ] && return
+
+# Common commands
+alias rm='rm -I --preserve-root'
+alias mv='mv -i'
+alias cp='cp -i'
+alias ln='ln -i'
+alias chown='chown --preserve-root'
+alias chmod='chmod --preserve-root'
+alias chgrp='chgrp --preserve-root'
+alias srm='sudo rm'
+
+# Hardening
+alias sudo='sudo '
+alias su="echo \"Always use '/bin/su –' for security reasons\""
+
+# Hashes
+alias sha1sum='openssl sha -sha1'
+alias sha256sum='openssl sha -sha256'
+alias sha512sum='openssl sha -sha512'
 
 # vim: ft=sh:ts=4:sw=4

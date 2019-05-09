@@ -1,0 +1,71 @@
+#!/bin/bash
+# {{ ansible_managed }}
+#
+# MIT License
+#
+# Copyright (c) 2017, 2018, 2019 Fabrizio Colonna <colofabrix@tin.it>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+# Aliases for resources
+#
+
+# Skip all for noninteractive shells.
+[ -z "$PS1" -o ! -t 1 ] && return
+
+# Some common options for programs
+export PS_HEADER="aux"
+export NETSTAT_OPTIONS="-tulpn"
+export PSTREE_OPTIONS="-paulh"
+
+# Disk usage of the current directory
+alias dud='du -hd1 2> /dev/null'
+# Find a command in the hystory
+alias cmd='history | egrep -i'
+
+# Display memory infomration
+alias meminfo='free -m -l -t; echo; cat /proc/meminfo | grep -i HugePages | cat'
+
+# List user processes
+alias ups='ps $PS_HEADER | egrep -v "[0-9] \[.*\]"'
+# List kernel processes
+alias kps='ps $PS_HEADER | head -1; ps $PS_HEADER | egrep --color=never "[0-9] \[.*\]"'
+# Display information for a mathed process
+alias proc='ps $PS_HEADER | head -1; ps $PS_HEADER | tail -n +2 | egrep -v grep | egrep -i'
+# Display processes oredering by memory usage
+alias psmem='ps $PS_HEADER --sort -rss'
+# Display first 10 processes oredering by memory usage
+alias psmem10='psmem | head -10'
+# Display processes oredering by CPU usage
+alias pscpu='ps $PS_HEADER --sort -%cpu'
+# Display first 10 processes oredering by CPU usage
+alias pscpu10='pscpu | head -10'
+# Display tree of processes
+alias pst='pstree $PSTREE_OPTIONS'
+
+# Display open ports on the external interface
+alias ports='netstat $NETSTAT_OPTIONS | egrep -ve "127.0.0.1" -e "p6"'
+# Display open ports on the external and local interface
+alias portsa='netstat $NETSTAT_OPTIONS | egrep -ve "p6"'
+# Look for an open ports on the external interface
+alias port='ports | egrep -i '
+# Look for an open ports on the external and local interface
+alias porta='portsa | egrep -i '
+
+# vim: ft=sh:ts=4:sw=4

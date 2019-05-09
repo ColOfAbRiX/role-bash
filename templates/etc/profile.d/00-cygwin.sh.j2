@@ -1,8 +1,9 @@
 #!/bin/bash
+# {{ ansible_managed }}
 #
 # MIT License
 #
-# Copyright (c) 2017 Fabrizio Colonna <colofabrix@tin.it>
+# Copyright (c) 2017, 2018, 2019 Fabrizio Colonna <colofabrix@tin.it>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,20 +23,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# Load custom MOTD scripts from /etc/motd.d
+# Cygwin custom fixes for bash
 #
 
-# Skip all for noninteractive shells.
-[ -z "$PS1" -o ! -t 1 ] && return
+# Use Windows symlinks features
+export CYGWIN="winsymlinks $CYGWIN"
 
-# Skip when explicitly instructed
-[ "$SKIP_MOTD" == "true" ] && return
+# Hide dotfiles in the home directory of Windows
+(ls -1d .* | egrep -v '^(\.|\.\.)$' | xargs -I {} attrib +H {} 2> /dev/null &)
 
-# Show MOTD only for interactive shells
-if [ -t 1 ] && [ -d /etc/motd.d ] ; then
-    for FILE in /etc/motd.d/* ; do
-        [ $FILE != "motd" -a -x $FILE ] && $FILE
-    done
-fi
+# The shell doesn't get set on cygwin
+export SHELL=$0
+
+# Locale explicit to C
+export LC_ALL='C'
+
+# Ansible and SSH don't work too well on windows. Use safe config
+# https://github.com/geerlingguy/JJG-Ansible-Windows/issues/6
+export ANSIBLE_SSH_ARGS="-o ControlMaster=no"
 
 # vim: ft=sh:ts=4:sw=4

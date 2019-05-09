@@ -1,0 +1,17 @@
+---
+
+- name: "Autocomplete : Remove Old Files"
+  file: path="{{ bash_paths.autocomplete }}" state=absent
+
+- name: "Autocomplete : Directory"
+  file:
+    path:  "{{ bash_paths.autocomplete }}"
+    state: directory
+    mode:  '0755'
+
+- name: "Autocomplete : Copy Files"
+  template:
+    src:  "{{ item }}"
+    dest: "{{ bash_paths.autocomplete }}/"
+  with_fileglob:
+   - "etc/bash_autocomplete.d/*"

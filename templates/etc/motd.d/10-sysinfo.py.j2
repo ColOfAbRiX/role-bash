@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# {{ ansible_managed }}
 #
 # MIT License
 #
-# Copyright (c) 2017 Fabrizio Colonna <colofabrix@tin.it>
+# Copyright (c) 2017, 2018, 2019 Fabrizio Colonna <colofabrix@tin.it>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +22,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
+# Displays system information
 #
 
 from __future__ import print_function
@@ -209,11 +211,13 @@ except:
 #
 try:
     dist, ver, _ = platform.linux_distribution(full_distribution_name=True)
-    data_output.append({
-        'title': 'Linux',
-        'value': "{0} {1}".format(dist, ver),
-        'color': fg("white")
-    })
+    value = "{0} {1}".format(dist, ver)
+    if value != " ":
+        data_output.append({
+            'title': 'Linux',
+            'value': value,
+            'color': fg("white")
+        })
 
 except:
     add_error_entry("Linux", "EXCEPTION")
@@ -222,6 +226,9 @@ except:
 #
 # Provisioner information
 #
+# TODO: Make this code more generic and not depended on specific variable
+# TODO: names. E.G. use a default variable containing JSON to display
+# TODO: several fields
 if os.environ.get('MACHINE_ENV', '') != '':
     try:
         machine_env = os.environ['MACHINE_ENV'].strip().lower()
@@ -346,11 +353,15 @@ try:
             color_loadavg(longterm)
         )
 
-    data_output.append({
-        'title': 'System Load',
-        'value': output,
-        'color': fg("white")
-    })
+    if shortterm > 0.0 and midterm > 0.0 and longterm > 0.0:
+        data_output.append({
+            'title': 'System Load',
+            'value': output,
+            'color': fg("white")
+        })
+
+    else:
+        add_error_entry("System Load", "NOT FOUND")
 
 except:
     add_error_entry("System Load", "EXCEPTION")
@@ -519,7 +530,8 @@ else:
 #
 # Display
 #
-print("~ System information as {0} ~\n".format(now.isoformat()).center(80))
+sysinfo_time = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+print("~ System information as {0} ~\n".format(sysinfo_time).center(80))
 
 last_line = {'title': None, 'value': None, 'color': None}
 for line in data_output:
@@ -535,6 +547,10 @@ for line in data_output:
 
     if __colored__ and 'color' in line:
         output += attr("reset")
+
+    # Truncate output to max 80 characters
+    output_len = len(" " * 25 + line['value'] + "..   ")
+    output = (output[:75] + "..") if output_len > 80 else output
 
     print(output, end='')
     print("")

@@ -1,10 +1,26 @@
 ---
 
 bash_os_dependencies:
- - python2-psutil
- - python2-pip
+  all:
+   - python2-pip
+  autocomplete: []
+  motd:
+   - python2-psutil
 
 bash_pip_dependencies:
- # The specific version is because colored is broken:
- # https://stackoverflow.com/questions/51072434/pip-install-colored-getting-error-filenotfounderror-errno-2-no-such-file-or
- - 'colored==1.3.5'
+  all:          []
+  autocomplete: []
+  motd:
+   # The specific version is because colored is broken:
+   # https://stackoverflow.com/questions/51072434/pip-install-colored-getting-error-filenotfounderror-errno-2-no-such-file-or
+   - 'colored==1.3.5'
+
+bash_unwanted_files:
+ - /etc/profile.d/colorls.sh
+ - /etc/profile.d/colorls.csh
+
+bash_paths:
+  all:          []
+  aliases:      /etc/bash_aliases.d
+  autocomplete: /etc/bash_completion.d
+  motd:         /etc/motd.d

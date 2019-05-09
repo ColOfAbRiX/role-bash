@@ -23,9 +23,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# Custom scripts
+# Loads custom BASH aliases
 #
 
-{{ profile_script.content | default('') }}
+# Skip all for noninteractive shells.
+[ -z "$PS1" -o ! -t 1 ] && return
+
+# Load all aliases from a specific directory
+if [ -d /etc/bash_aliases.d ] ; then
+    for FILE in /etc/bash_aliases.d/* ; do
+        . $FILE
+    done
+fi
 
 # vim: ft=sh:ts=4:sw=4

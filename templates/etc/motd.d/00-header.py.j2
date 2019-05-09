@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# {{ ansible_managed }}
 #
 # MIT License
 #
-# Copyright (c) 2017 Fabrizio Colonna <colofabrix@tin.it>
+# Copyright (c) 2017, 2018, 2019 Fabrizio Colonna <colofabrix@tin.it>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +22,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
+# Displays a header
 #
 
 from __future__ import print_function
@@ -50,6 +52,10 @@ random.seed()
 dist, ver, flav = platform.linux_distribution(full_distribution_name=True)
 kernel   = platform.release()
 hostname = socket.gethostname().split(".")[0]
+if dist == "":
+    dist = platform.system()
+if ver != "":
+    dist = "{0} {1}".format(dist, ver)
 
 
 #
@@ -57,14 +63,14 @@ hostname = socket.gethostname().split(".")[0]
 #
 print("")
 print(
-    " ~ Welcome to {0} {1} (Kernel {2}) ~"
-        .format(dist, ver, kernel)
+    " ~ Welcome to {0} (Kernel {1}) ~"
+        .format(dist, kernel)
         .center(80)
 )
 
 def tt_len(text):
     def size(c):
-        if c in "qpdbwmWMOQ":
+        if c in "acqpdbwmWMNOQLA":
             return 1.3
         elif c in "1frtijlIJ`[];’,. ! ()\"":
             return 0.7
@@ -81,11 +87,12 @@ if __colored__:
 
 if __pyfiglet__:
     # Adapt for to the size of the text
-    if tt_len(hostname) < 6:
+    hostname_len = tt_len(hostname)
+    if hostname_len < 6:
         font = "big"
-    elif tt_len(hostname) < 12:
+    elif hostname_len < 12:
         font = "standard"
-    elif tt_len(hostname) < 20:
+    elif hostname_len < 20:
         font = "small"
     else:
         font = "digital"

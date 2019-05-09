@@ -1,0 +1,17 @@
+---
+
+- name: "Aliases : Remove Old Files"
+  file: path="{{ bash_paths.aliases }}" state=absent
+
+- name: "Aliases : Directory"
+  file:
+    path:  "{{ bash_paths.aliases }}"
+    state: directory
+    mode:  '0755'
+
+- name: "Aliases : Copy Files"
+  template:
+    src:  "{{ item }}"
+    dest: "{{ bash_paths.aliases }}/"
+  with_fileglob:
+   - "etc/bash_aliases.d/*"

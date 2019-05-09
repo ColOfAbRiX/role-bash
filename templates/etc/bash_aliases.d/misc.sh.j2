@@ -1,8 +1,9 @@
 #!/bin/bash
+# {{ ansible_managed }}
 #
 # MIT License
 #
-# Copyright (c) 2017 Fabrizio Colonna <colofabrix@tin.it>
+# Copyright (c) 2017, 2018, 2019 Fabrizio Colonna <colofabrix@tin.it>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,36 +23,29 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# History configuration (it also affects history2syslog.sh)
+# Miscellaneous aliases
 #
 
 # Skip all for noninteractive shells.
 [ -z "$PS1" -o ! -t 1 ] && return
 
-# Turn on parallel history
-shopt -s histappend
-history -a
+# Grep
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
 
-# Time formatting
-export HISTTIMEFORMAT="%y-%m-%d %T "
-
-# Big history
-export HISTSIZE=5000
-export HISTFILESIZE=100000
-
-# Avoid duplicates
-export HISTCONTROL=ignoredups:erasedups
-
-# Ignore common commands
-export HISTIGNORE='ls:bg:fg:history:clear:l:ll:cat:man'
-
-# Turn on checkwinsize
-shopt -s checkwinsize
-
-# Force multiline commands into one line
-shopt -s cmdhist
-
-# Disable history expansion (the exclamation mark)
-#set +o histexpand
+# Various
+alias diff='colordiff'
+alias bc='bc -l'
+alias wget='wget -c'
+alias curl='curl -s'
+alias path='echo -e ${PATH//:/\\n} | sort'
+alias now='date +"%T"'
+alias nowtime='now'
+alias nowdate='date +"%d-%m-%Y"'
+alias iptraf-ng='TERM=xterm iptraf-ng'
+alias git-stubborn='git ls-files -m | xargs -i git update-index --assume-unchanged "{}"'
+alias most-used='HISTTIMEFORMAT="" history | sed -nre "s/^\s*[0-9]+\s*(\w+).*$/\1/p" | sort | uniq -c | sort -rg | head -15'
+alias mykey='cat ~/.ssh/id_rsa.pub'
 
 # vim: ft=sh:ts=4:sw=4
