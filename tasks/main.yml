@@ -1,5 +1,4 @@
 ---
-# # # # #  Bash  # # # # #
 
 - name: "Require Correct Linux Distribution"
   assert:
@@ -8,8 +7,6 @@
           (ansible_distribution == 'Ubuntu'             and ansible_distribution_version | version_compare('16.0.0', '>='))
     msg:  "This Linux distribution '{{ ansible_distribution }} {{ ansible_distribution_version }}' is not supported by the role."
   tags: bash
-
-#'microsoft' in ansible_kernel | lower
 
 - name: "Include OS Variables"
   include_vars: "vars_{{ ansible_distribution }}.yml"
@@ -40,13 +37,13 @@
   tags: bash
 
 - name: "Configure Features"
-  include_tasks: "features/{{ item }}.yml"
+  include_tasks: "features/{{ feature_name }}.yml"
   with_items:
    - default
    - "{{ bash_features }}"
+  loop_control:
+    loop_var: feature_name
   tags: bash
-
-- fail:
 
 - name: "User Configuration Files"
   become: yes
