@@ -3,18 +3,7 @@ galaxy_info:
   license: MIT
   author: Fabrizio Colonna <colofabrix@tin.it>
   description: Configuration and Customization for BASH
-  min_ansible_version: 2.1.0
-
-  #
-  # Below are all platforms currently available. Just uncomment
-  # the ones that apply to your role. If you don't see your
-  # platform on this list, let us know and we'll get it added!
-  #
-  platforms:
-    - name: EL
-      versions:
-        - 6
-        - 7
+  min_ansible_version: 2.4.0
 
   # List tags for your role here, one per line. A tag is a keyword that describes
   # and categorizes the role. Users find roles by searching for tags. Be sure to

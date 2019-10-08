@@ -2,11 +2,9 @@
 
 bash_os_dependencies:
   all:
-   - python-pip
-   - python3-pip
+   - python2-pip
   motd:
-   - python-psutil
-   - python3-psutil
+   - python2-psutil
   autocomplete:   []
   aliases:        []
   history:        []
@@ -25,7 +23,9 @@ bash_pip_dependencies:
   history2syslog: []
   prompt:         []
 
-bash_unwanted_files: []
+bash_unwanted_files:
+ - /etc/profile.d/colorls.sh
+ - /etc/profile.d/colorls.csh
 
 bash_paths:
   all:            ''
