@@ -4,12 +4,24 @@
 bash_login_motd: ""
 
 bash_features:
- - aliases
- - autocomplete
- - history
- - history2syslog
- - motd
- - prompt
+   # Support for drop-in aliases plus several useful ones
+ - name:  aliases
+   state: present
+   # Support for drop-in autocomplete plus several useful ones
+ - name:  autocomplete
+   state: present
+   # Customize bash history
+ - name:  history
+   state: present
+   # Save history to syslog
+ - name:  history2syslog
+   state: present
+   # Custom message-of-the-day
+ - name:  motd
+   state: present
+   # Custom shell prompt
+ - name:  prompt
+   state: present
 
 # Bash scripts on /etc/profile.d
 bash_profile_d: []

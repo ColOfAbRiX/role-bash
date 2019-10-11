@@ -22,12 +22,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-#
-# History configuration (it also affects history2syslog.sh)
-#
 
 # Skip all for noninteractive shells.
-[ -z "$PS1" -o ! -t 1 ] && return
+# https://www.gnu.org/software/bash/manual/html_node/Is-this-Shell-Interactive_003f.html
+[[ "$-" != *"i"* ]] && return
 
 # Turn on parallel history
 shopt -s histappend

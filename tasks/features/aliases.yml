@@ -1,20 +1,33 @@
 ---
 
-- name: "Aliases : Remove Old Files"
-  file: path="{{ bash_paths.aliases }}" state=absent
+- block:
 
-- name: "Aliases : Directory"
-  file:
-    path:  "{{ bash_paths.aliases }}"
-    state: directory
-    mode:  '0755'
+   - name: "Aliases : Main script"
+     template:
+       src:   etc/profile.d/bash_aliases.sh.j2
+       dest:  "{{ bash_profile_d }}/bash_aliases.sh"
+       mode:  '0755'
+       owner: root
+       group: root
 
-- name: "Aliases : Copy Files"
-  template:
-    src:   "{{ item }}"
-    dest:  "{{ bash_paths.aliases }}/{{ item | basename | regex_replace('\\.j2', '') }}"
-    mode:  '0755'
-    owner: root
-    group: root
-  with_fileglob:
-   - "../../templates/etc/bash_aliases.d/*"
+   - name: "Aliases : Directory"
+     file:
+       path:  "{{ bash_paths.aliases }}"
+       state: directory
+       mode:  '0755'
+
+   - name: "Aliases : Copy Files"
+     template:
+       src:   "{{ item }}"
+       dest:  "{{ bash_paths.aliases }}/{{ item | basename | regex_replace('\\.j2', '') }}"
+       mode:  '0755'
+       owner: root
+       group: root
+     with_fileglob:
+      - "../../templates/etc/bash_aliases.d/*"
+
+  when: feature.state | default('absent') == 'present'
+
+- name: "Aliases : Main script"
+  file: path="{{ bash_profile_d }}/bash_aliases.sh" state=absent
+  when: feature.state | default('absent') == 'absent'

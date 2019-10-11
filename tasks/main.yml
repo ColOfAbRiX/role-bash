@@ -12,37 +12,33 @@
   include_vars: "vars_{{ ansible_distribution }}.yml"
   tags: bash
 
-- name: "Include OS Initialization"
-  include_tasks: "init/{{ ansible_distribution }}.yml"
-  tags: bash
-
 - name: "OS Dependencies"
-  package: name="{{ bash_os_dependencies[item] }}" state=present
+  package: name="{{ bash_os_dependencies[item.name] }}" state=present
   with_items:
-   - all
+   - { name: all, state: present }
    - "{{ bash_features }}"
   tags: bash
 
 - name: "PIP Dependencies"
-  pip: name="{{ bash_pip_dependencies[item] }}" state=present
+  pip: name="{{ bash_pip_dependencies[item.name] }}" state=present
   with_items:
-   - all
+   - { name: all, state: present }
    - "{{ bash_features }}"
   tags: bash
 
-- name: "Remove Unwanted Scripts"
+- name: "Remove Unwanted Files"
   file: path="{{ item }}" state=absent
   with_items:
    - "{{ bash_unwanted_files }}"
   tags: bash
 
 - name: "Configure Features"
-  include_tasks: "features/{{ feature_name }}.yml"
+  include_tasks: "features/{{ feature.name }}.yml"
   with_items:
-   - default
+   - { name: all, state: present }
    - "{{ bash_features }}"
   loop_control:
-    loop_var: feature_name
+    loop_var: feature
   tags: bash
 
 - name: "User Configuration Files"

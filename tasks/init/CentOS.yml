@@ -1,5 +1,0 @@
----
-
-- name: "Update yum cache"
-  command: yum makecache
-  changed_when: false

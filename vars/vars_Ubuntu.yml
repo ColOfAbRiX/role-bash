@@ -35,3 +35,5 @@ bash_paths:
   history:        ''
   history2syslog: ''
   prompt:         ''
+
+bash_profile_d: /etc/profile.d
