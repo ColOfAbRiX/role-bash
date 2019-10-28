@@ -23,10 +23,6 @@ bash_pip_dependencies:
   history2syslog: []
   prompt:         []
 
-bash_unwanted_files:
- - /etc/profile.d/colorls.sh
- - /etc/profile.d/colorls.csh
-
 bash_paths:
   all:            ''
   aliases:        /etc/bash_aliases.d

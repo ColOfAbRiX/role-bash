@@ -1,16 +1,31 @@
 ---
 
-- name: "Install User Scripts for {{ item }}"
+- name: "Install ~/.bashrc"
   template:
-    src:    "home/{{ item }}.j2"
-    dest:   "~/.{{ item }}"
+    src:    "{{ item }}"
+    dest:   "~/.bashrc"
     force:  yes
     mode:   '0600'
     seuser: system_u
     serole: object_r
     setype: user_home_t
   when: user.shell | default('/bin/bash') == '/bin/bash' and
-        user[item] is defined
-  with_items:
-   - bashrc
-   - bash_profile
+        user["bashrc"] is defined
+  with_first_found:
+   - ../templates/os-{{ ansible_distribution }}/home/bashrc.j2
+   - ../templates/home/bashrc.j2
+
+- name: "Install ~/.profile"
+  template:
+    src:    "{{ item }}"
+    dest:   "~/.bash_profile"
+    force:  yes
+    mode:   '0600'
+    seuser: system_u
+    serole: object_r
+    setype: user_home_t
+  when: user.shell | default('/bin/bash') == '/bin/bash' and
+        user["profile"] is defined
+  with_first_found:
+   - ../templates/os-{{ ansible_distribution }}/home/bash_profile.j2
+   - ../templates/home/bash_profile.j2

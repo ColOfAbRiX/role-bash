@@ -42,7 +42,7 @@ bash_users: []
 #     echo "This is the ~/.bashrc file."
 #   # Literal code to add to ~/.bash_profile. If omitted the .bash_profile file
 #   # will not be touched.
-#   bash_profile: |
-#     echo "This is the ~/.bash_profile file."
+#   profile: |
+#     echo "This is the ~/.profile file."
 #   # Additinal PATH directories
 #   path: ["$HOME/my_custom_app"]

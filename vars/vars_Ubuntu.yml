@@ -25,8 +25,6 @@ bash_pip_dependencies:
   history2syslog: []
   prompt:         []
 
-bash_unwanted_files: []
-
 bash_paths:
   all:            ''
   aliases:        /etc/bash_aliases.d

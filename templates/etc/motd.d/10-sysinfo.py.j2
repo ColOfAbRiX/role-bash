@@ -224,41 +224,29 @@ except:
 
 
 #
-# Provisioner information
+# Custom MOTD entries from env variables
 #
-# TODO: Make this code more generic and not depended on specific variable
-# TODO: names. E.G. use a default variable containing JSON to display
-# TODO: several fields
-if os.environ.get('MACHINE_ENV', '') != '':
-    try:
-        machine_env = os.environ['MACHINE_ENV'].strip().lower()
+for env in os.environ.keys():
+    n = re.findall("MOTD_(\\d+)_TITLE", env)
+    if len(n) != 1:
+        continue
 
-        color = fg("white")
-        if machine_env == 'int':
-            color = fg("light_yellow")
-        elif machine_env == 'prd':
-            color = fg("light_red")
+    motd_title = "MOTD_{0}_TITLE".format(n[0])
+    motd_value = "MOTD_{0}_VALUE".format(n[0])
+    motd_color = "MOTD_{0}_COLOR".format(n[0])
 
-        data_output.append({
-            'title': 'Environment',
-            'value': os.environ.get('MACHINE_ENV_DESC', machine_env).strip(),
-            'color': color
-        })
+    if motd_value not in os.environ.keys():
+        continue
 
-    except:
-        add_error_entry("Environment", "EXCEPTION")
+    motd_title = os.environ.get(motd_title).strip()
+    motd_value = os.environ.get(motd_value).strip()
+    motd_color = os.environ.get(motd_color, "white").strip()
 
-if os.environ.get('MACHINE_DC', '') != '':
-    try:
-        machine_dc = os.environ['MACHINE_DC'].strip().lower()
-        data_output.append({
-            'title': 'Datacenter',
-            'value': os.environ.get('MACHINE_DC_DESC', machine_dc).strip(),
-            'color': fg("white")
-        })
-
-    except:
-        add_error_entry("Datacenter", "EXCEPTION")
+    data_output.append({
+        'title': motd_title,
+        'value': motd_value,
+        'color': motd_color
+    })
 
 
 #

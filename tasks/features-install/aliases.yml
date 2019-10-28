@@ -31,3 +31,18 @@
 - name: "Aliases : Main script"
   file: path="{{ bash_profile_d }}/bash_aliases.sh" state=absent
   when: feature.state | default('absent') == 'absent'
+
+- name: "Aliases : Remove Unwanted Files in CentOS"
+  block:
+
+   - copy: remote_src=True src="{{ item }}" dest="{{ item }}-ansible-unused"
+     with_items:
+      - /etc/profile.d/colorls.sh
+      - /etc/profile.d/colorls.csh
+
+   - file: path="{{ item }}" state=absent
+     with_items:
+      - /etc/profile.d/colorls.sh
+      - /etc/profile.d/colorls.csh
+
+  when: ansible_distribution == 'CentOS'

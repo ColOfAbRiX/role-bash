@@ -8,6 +8,7 @@
     msg:  "This Linux distribution '{{ ansible_distribution }} {{ ansible_distribution_version }}' is not supported by the role."
   tags: bash
 
+
 - name: "Include OS Variables"
   include_vars: "vars_{{ ansible_distribution }}.yml"
   tags: bash
@@ -17,6 +18,7 @@
   with_items:
    - { name: all, state: present }
    - "{{ bash_features }}"
+  when: bash_os_dependencies[item.name] | default([]) != []
   tags: bash
 
 - name: "PIP Dependencies"
@@ -24,22 +26,9 @@
   with_items:
    - { name: all, state: present }
    - "{{ bash_features }}"
+  when: bash_pip_dependencies[item.name] | default([]) != []
   tags: bash
 
-- name: "Remove Unwanted Files"
-  file: path="{{ item }}" state=absent
-  with_items:
-   - "{{ bash_unwanted_files }}"
-  tags: bash
-
-- name: "Configure Features"
-  include_tasks: "features/{{ feature.name }}.yml"
-  with_items:
-   - { name: all, state: present }
-   - "{{ bash_features }}"
-  loop_control:
-    loop_var: feature
-  tags: bash
 
 - name: "User Configuration Files"
   become: yes
@@ -51,16 +40,23 @@
     loop_var: user
   tags: bash
 
-# - name: "Files Permissions"
-#   file:
-#     path:   "{{ item }}"
-#     owner:  root
-#     group:  root
-#     seuser: system_u
-#     serole: object_r
-#     setype: etc_t
-#   with_items:
-#     - /etc/profile.d
-#     - /etc/motd.d
-#     - /etc/bashrc
-#   tags: bash
+
+- name: "Install Features"
+  include_tasks: "features-install/{{ feature.name }}.yml"
+  with_items:
+   - { name: all, state: present }
+   - "{{ bash_features }}"
+  when: feature["state"] | default('') == 'present'
+  loop_control:
+    loop_var: feature
+  tags: bash
+
+- name: "Remove Features"
+  include_tasks: "features-remove/{{ feature.name }}.yml"
+  with_items:
+   - { name: all, state: present }
+   - "{{ bash_features }}"
+  when: feature["state"] | default('') == 'absent'
+  loop_control:
+    loop_var: feature
+  tags: bash
