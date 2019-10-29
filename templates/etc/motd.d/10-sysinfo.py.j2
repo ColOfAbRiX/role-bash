@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # {{ ansible_managed }}
 #
 # MIT License
@@ -149,10 +149,15 @@ def color_loadavg(value):
 
     value /= psutil.cpu_count()
 
-    return \
-        color_level(value, min_value=0.5, max_value=1.05) +\
-        "{0:d}%".format(int(math.floor(value * 100))) +\
-        attr("reset")
+    color = color_level(value, min_value=0.5, max_value=1.05)
+    display = "{0:d}%".format(int(math.floor(value * 100)))
+    reset = attr("reset")
+
+    return (color + display + reset), len(display)
+
+
+def rlen(val):
+    return len(repr(val))
 
 
 def file_entry(file_path, regex, default=()):
@@ -328,30 +333,35 @@ else:
 #
 try:
     cpuload = file_entry('/proc/loadavg', r'^([\d.]+) ([\d.]+) ([\d.]+)')
+
     shortterm = float(cpuload[0])
     midterm   = float(cpuload[1])
     longterm  = float(cpuload[2])
+
+    st_str, l1 = color_loadavg(shortterm)
+    mt_str, l2 = color_loadavg(midterm)
+    lt_str, l3 = color_loadavg(longterm)
 
     output = (
         "{0}" + fg("white") + "(1min), "
         "{1}" + fg("white") + "(5min), "
         "{2}" + fg("white") + "(15min)").format(
-            color_loadavg(shortterm),
-            color_loadavg(midterm),
-            color_loadavg(longterm)
+            st_str, mt_str, lt_str
         )
 
     if shortterm > 0.0 and midterm > 0.0 and longterm > 0.0:
         data_output.append({
             'title': 'System Load',
             'value': output,
-            'color': fg("white")
+            'color': fg("white"),
+            'value_len': l1 + l2 + l3 + 3 * rlen(fg("white"))
         })
 
     else:
         add_error_entry("System Load", "NOT FOUND")
 
-except:
+except Exception as e:
+    raise e
     add_error_entry("System Load", "EXCEPTION")
 
 
@@ -523,6 +533,10 @@ print("~ System information as {0} ~\n".format(sysinfo_time).center(80))
 
 last_line = {'title': None, 'value': None, 'color': None}
 for line in data_output:
+    # Skip errored lines
+    if line['value'] == "EXCEPTION":
+        continue
+
     if last_line['title'] == line['title']:
         output = " " * 25
     else:
@@ -537,7 +551,13 @@ for line in data_output:
         output += attr("reset")
 
     # Truncate output to max 80 characters
-    output_len = len(" " * 25 + line['value'] + "..   ")
+    if 'value_len' in line:
+        # Using a precalculated length
+        output_len = 20 + line['value_len']
+    else:
+        # Calculating the length of the line
+        output_len = len(" " * 25 + line['value'] + "..   ")
+
     output = (output[:75] + "..") if output_len > 80 else output
 
     print(output, end='')

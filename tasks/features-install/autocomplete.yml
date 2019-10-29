@@ -1,33 +1,25 @@
 ---
 
-- block:
-
-   - name: "Autocomplete : Main script"
-     template:
-       src:   etc/profile.d/bash_completion.sh.j2
-       dest:  "{{ bash_profile_d }}/bash_completion.d"
-       mode:  '0755'
-       owner: root
-       group: root
-
-   - name: "Autocomplete : Directory"
-     file:
-       path:  "{{ bash_paths.autocomplete }}"
-       state: directory
-       mode:  '0755'
-
-   - name: "Autocomplete : Copy Files"
-     template:
-       src:   "{{ item }}"
-       dest:  "{{ bash_paths.autocomplete }}/{{ item | basename | regex_replace('\\.j2', '') }}"
-       mode:  '0755'
-       owner: root
-       group: root
-     with_fileglob:
-      - "../../templates/etc/bash_completion.d/*"
-
-  when: feature.state | default('absent') == 'present'
-
 - name: "Autocomplete : Main script"
-  file: path="{{ bash_profile_d }}/bash_completion.d" state=absent
-  when: feature.state | default('absent') == 'absent'
+  template:
+    src:   etc/profile.d/bash_completion.sh.j2
+    dest:  "{{ bash_profile_d }}/bash_completion.sh"
+    mode:  '0755'
+    owner: root
+    group: root
+
+- name: "Autocomplete : Directory"
+  file:
+    path:  "{{ bash_paths.autocomplete }}"
+    state: directory
+    mode:  '0755'
+
+- name: "Autocomplete : Copy Files"
+  template:
+    src:   "{{ item }}"
+    dest:  "{{ bash_paths.autocomplete }}/{{ item | basename | regex_replace('\\.j2', '') }}"
+    mode:  '0755'
+    owner: root
+    group: root
+  with_fileglob:
+  - "../../templates/etc/bash_completion.sh"

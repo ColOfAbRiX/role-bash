@@ -1,1 +1,19 @@
 ---
+
+- name: "Aliases : Main script"
+  file: path="{{ bash_profile_d }}/bash_aliases.sh" state=absent
+
+- name: "Aliases : Copy Back Removed Files in CentOS"
+  block:
+
+   - copy: remote_src=True src="{{ item }}" dest="{{ item }}"
+     with_items:
+      - /etc/profile.d/colorls.sh-ansible-unused
+      - /etc/profile.d/colorls.csh-ansible-unused
+
+   - file: path="{{ item }}" state=absent
+     with_items:
+      - /etc/profile.d/colorls.sh-ansible-unused
+      - /etc/profile.d/colorls.csh-ansible-unused
+
+  when: ansible_distribution == 'CentOS'

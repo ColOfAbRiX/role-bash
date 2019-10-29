@@ -1,1 +1,4 @@
 ---
+
+- name: "Autocomplete : Main script"
+  file: path="{{ bash_profile_d }}/bash_completion.sh" state=absent

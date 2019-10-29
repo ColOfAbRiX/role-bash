@@ -2,11 +2,10 @@
 
 bash_os_dependencies:
   all:
-   - python-pip
    - python3-pip
   motd:
-   - python-psutil
    - python3-psutil
+   - python3-pyfiglet
   autocomplete:   []
   aliases:        []
   history:        []
@@ -18,7 +17,7 @@ bash_pip_dependencies:
   motd:
    # The specific version is because colored is broken:
    # https://stackoverflow.com/questions/51072434/pip-install-colored-getting-error-filenotfounderror-errno-2-no-such-file-or
-   - 'colored==1.3.5'
+   - colored
   autocomplete:   []
   aliases:        []
   history:        []

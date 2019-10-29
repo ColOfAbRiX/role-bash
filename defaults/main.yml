@@ -1,7 +1,7 @@
 ---
 
 # Login Message of the Day
-bash_login_motd: ""
+bash_login_motd: "                                    Welcome!                                    \n\n"
 
 bash_features:
    # Support for drop-in aliases plus several useful ones
@@ -11,17 +11,17 @@ bash_features:
  - name:  autocomplete
    state: present
    # Customize bash history
- - name:  history
-   state: present
-   # Save history to syslog
- - name:  history2syslog
-   state: present
-   # Custom message-of-the-day
+#  - name:  history
+#    state: present
+#    # Save history to syslog
+#  - name:  history2syslog
+#    state: present
+#    # Custom message-of-the-day
  - name:  motd
    state: present
    # Custom shell prompt
- - name:  prompt
-   state: present
+#  - name:  prompt
+#    state: present
 
 # Bash scripts on /etc/profile.d
 bash_profile_d: []

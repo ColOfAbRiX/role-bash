@@ -1,20 +1,33 @@
 ---
 
-# - name: "MOTD - Remove Old Files"
-#   file: path="{{ item }}" state=absent
-#   with_items:
-#    - "{{ bash_paths.motd }}"
-#    - /etc/motd
+- name: "MOTD : Main script"
+  template:
+    src:   etc/profile.d/90-motd.sh.j2
+    dest:  "{{ bash_profile_d }}/90-motd.sh"
+    mode:  '0755'
+    owner: root
+    group: root
 
-# - name: "MOTD - Directory"
-#   file:
-#     path:  "{{ bash_paths.motd }}"
-#     state: directory
-#     mode:  '0755'
+- name: "MOTD : Directory"
+  file:
+    path:  "{{ bash_paths.motd }}"
+    state: directory
+    mode:  '0755'
 
-# - name: "MOTD - Copy Files"
-#   template:
-#     src:  "{{ item }}"
-#     dest: "{{ bash_paths.motd }}"
-#   with_fileglob:
-#    - "etc/motd.d/*"
+- name: "MOTD : Copy Files"
+  template:
+    src:  "{{ item }}"
+    dest: "{{ bash_paths.motd }}/{{ item | basename | regex_replace('\\.j2$', '') }}"
+    owner:   root
+    group:   root
+    mode:    '0775'
+  with_fileglob:
+   - "../../templates/etc/motd.d/*.py"
+
+- name: "MOTD : Copy text file"
+  template:
+    src:  "etc/motd.d/motd.j2"
+    dest: "{{ bash_paths.motd }}/motd"
+    owner:   root
+    group:   root
+    mode:    '0644'

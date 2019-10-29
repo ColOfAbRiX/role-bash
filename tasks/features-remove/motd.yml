@@ -1,1 +1,4 @@
 ---
+
+- name: "MOTD : Main script"
+  file: path="{{ bash_profile_d }}/90-motd.sh" state=absent
