@@ -60,6 +60,9 @@ _set_prompt() {
     # Date
     tags+=("$C_FORE_WHITE$(date +"%a %x %X")")
 
+    # Username
+    current_user="${USERNAME:-$USER}"
+
     # Root user
     if [[ $EUID == 0 ]] ; then
         tags+=("${C_FORE_LIGHT_RED}ROOT")
@@ -101,7 +104,7 @@ _set_prompt() {
     fi
 
     # Building LINE 2
-    lines+=("$USERNAME@\h: $C_FORE_DARK_GRAY\w$C_FORE_DEFAULT")
+    lines+=("$C_FORE_GREEN$current_user@\h$C_FORE_DEFAULT: $C_FORE_BLUE\w$C_FORE_DEFAULT")
 
     # Building LINE 3
     lines+=("\\$ ")
@@ -111,7 +114,7 @@ _set_prompt() {
     #
 
     export PS1=""
-    for ((i = 0; i < ${#lines[@]}; i++)) ; do
+    for ((i = 0; i < {% raw %}${#lines[@]}{% endraw %}; i++)) ; do
         PS1="$PS1\n${lines[$i]}"
     done
 

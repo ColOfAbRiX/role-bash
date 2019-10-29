@@ -1,0 +1,25 @@
+---
+
+- name: "Drop-in : Copy File : {{ profile_script.name }}"
+  template:
+    src:   "{{ profile_script.path }}"
+    dest:  "{{ bash_profile_d }}/{{ profile_script.name }}"
+    owner: root
+    group: root
+    mode:  '0775'
+  when: profile_script.type | default('') == "file" and
+        profile_script.state | default('') == "present"
+
+- name: "Drop-in : Copy Content : {{ profile_script.name }}"
+  copy:
+    content: "{{ profile_script.content }}"
+    dest:    "{{ bash_profile_d }}/{{ profile_script.name }}"
+    owner:   root
+    group:   root
+    mode:    '0775'
+  when: profile_script.type | default('') == "text" and
+        profile_script.state | default('') == "present"
+
+- name: "Drop-in : Remove File : {{ profile_script.name }}"
+  file: path="{{ bash_profile_d }}/{{ profile_script.name }}" state=absent
+  when: profile_script.state | default('') == "absent"

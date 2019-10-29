@@ -1,1 +1,9 @@
 ---
+
+- name: "History2Syslog : Main script"
+  template:
+    src:   etc/profile.d/11-history2syslog.sh.j2
+    dest:  "{{ bash_profile_d }}/11-history2syslog.sh"
+    mode:  '0755'
+    owner: root
+    group: root

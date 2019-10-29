@@ -1,34 +1,40 @@
 ---
 
 # Login Message of the Day
-bash_login_motd: "                                    Welcome!                                    \n\n"
+bash_login_motd: "                                    Welcome!                                    \n"
 
-bash_features:
-   # Support for drop-in aliases plus several useful ones
- - name:  aliases
-   state: present
-   # Support for drop-in autocomplete plus several useful ones
- - name:  autocomplete
-   state: present
-   # Customize bash history
+bash_features: []
+#    # Support for drop-in aliases plus several useful ones
+#  - name:  aliases
+#    state: present
+#    # Support for drop-in autocomplete plus several useful ones
+#  - name:  autocomplete
+#    state: present
+#    # Customize bash history
 #  - name:  history
 #    state: present
 #    # Save history to syslog
 #  - name:  history2syslog
 #    state: present
 #    # Custom message-of-the-day
- - name:  motd
-   state: present
-   # Custom shell prompt
+#  - name:  motd
+#    state: present
+#    # Custom shell prompt
 #  - name:  prompt
 #    state: present
 
 # Bash scripts on /etc/profile.d
-bash_profile_d: []
+bash_profile_d_scripts: []
 # # Example of adding a new profile script for a simple umask
-# - name: test_file
-#   content: |
-#     umask 0002
+#  - name: test_file.sh
+#    state: present
+#    type: text
+#    content: |
+#      umask 0002
+# - name: test_file_2.sh
+#   state: present
+#   type: file
+#   path: path_to_file
 
 # Bash customizations for users
 bash_users: []

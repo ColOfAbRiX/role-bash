@@ -1,1 +1,4 @@
 ---
+
+- name: "History2Syslog : Main script"
+  file: path="{{ bash_profile_d }}/10-history.sh" state=absent

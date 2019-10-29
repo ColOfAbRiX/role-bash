@@ -16,18 +16,18 @@
 
 - name: "MOTD : Copy Files"
   template:
-    src:  "{{ item }}"
-    dest: "{{ bash_paths.motd }}/{{ item | basename | regex_replace('\\.j2$', '') }}"
-    owner:   root
-    group:   root
-    mode:    '0775'
+    src:   "{{ item }}"
+    dest:  "{{ bash_paths.motd }}/{{ item | basename | regex_replace('\\.j2$', '') }}"
+    owner: root
+    group: root
+    mode:  '0775'
   with_fileglob:
    - "../../templates/etc/motd.d/*.py"
 
 - name: "MOTD : Copy text file"
   template:
-    src:  "etc/motd.d/motd.j2"
-    dest: "{{ bash_paths.motd }}/motd"
-    owner:   root
-    group:   root
-    mode:    '0644'
+    src:   "etc/motd.d/motd.j2"
+    dest:  "{{ bash_paths.motd }}/motd"
+    owner: root
+    group: root
+    mode:  '0644'

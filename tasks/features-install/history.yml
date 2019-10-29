@@ -1,1 +1,9 @@
 ---
+
+- name: "History : Main script"
+  template:
+    src:   etc/profile.d/10-history.sh.j2
+    dest:  "{{ bash_profile_d }}/10-history.sh"
+    mode:  '0755'
+    owner: root
+    group: root

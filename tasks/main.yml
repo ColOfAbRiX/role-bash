@@ -7,10 +7,10 @@
     msg:  "This Linux distribution '{{ ansible_distribution }} {{ ansible_distribution_version }}' is not supported by the role."
   tags: bash
 
-
 - name: "Include OS Variables"
   include_vars: "vars_{{ ansible_distribution }}.yml"
   tags: bash
+
 
 - name: "OS Dependencies"
   package: name="{{ bash_os_dependencies[item.name] }}" state=present
@@ -26,17 +26,6 @@
    - { name: all, state: present }
    - "{{ bash_features }}"
   when: bash_pip_dependencies[item.name] | default([]) != []
-  tags: bash
-
-
-- name: "User Configuration Files"
-  become: yes
-  become_user: "{{ user.username }}"
-  include_tasks: config_user.yml
-  with_items:
-   - "{{ bash_users | default([]) }}"
-  loop_control:
-    loop_var: user
   tags: bash
 
 
@@ -58,4 +47,24 @@
   when: feature["state"] | default('') == 'absent'
   loop_control:
     loop_var: feature
+  tags: bash
+
+
+- name: "Drop-in Files for profile.d"
+  include_tasks: drop_in.yml
+  with_items:
+   - "{{ bash_profile_d_scripts | default([]) }}"
+  loop_control:
+    loop_var: profile_script
+  tags: bash
+
+
+- name: "User Configuration Files"
+  become: yes
+  become_user: "{{ user.username }}"
+  include_tasks: config_user.yml
+  with_items:
+   - "{{ bash_users | default([]) }}"
+  loop_control:
+    loop_var: user
   tags: bash
