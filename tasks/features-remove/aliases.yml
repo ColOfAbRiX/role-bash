@@ -2,6 +2,12 @@
 
 - name: "Aliases : Main script"
   file: path="{{ bash_profile_d }}/bash_aliases.sh" state=absent
+  tags: bash
+
+- name: "Aliases : Custom Scripts"
+  file: path="{{ bash_paths.aliases }}/{{ item.name }}" state=absent
+  with_items: "{{ feature['files'] | default([]) }}"
+  tags: bash
 
 - name: "Aliases : Copy Back Removed Files in CentOS"
   block:
@@ -17,3 +23,4 @@
       - /etc/profile.d/colorls.csh-ansible-unused
 
   when: ansible_distribution == 'CentOS'
+  tags: bash

@@ -1,5 +1,9 @@
 ---
 
+- set_fact:
+    autocomplete_path: "{{ bash_paths.autocomplete }}"
+  tags: bash
+
 - name: "Autocomplete : Main script"
   template:
     src:   etc/profile.d/bash_completion.sh.j2
@@ -7,19 +11,44 @@
     mode:  '0755'
     owner: root
     group: root
+  tags: bash
 
 - name: "Autocomplete : Directory"
   file:
-    path:  "{{ bash_paths.autocomplete }}"
+    path:  "{{ autocomplete_path }}"
     state: directory
     mode:  '0755'
+  tags: bash
 
 - name: "Autocomplete : Copy Files"
   template:
     src:   "{{ item }}"
-    dest:  "{{ bash_paths.autocomplete }}/{{ item | basename | regex_replace('\\.j2', '') }}"
+    dest:  "{{ autocomplete_path }}/{{ item | basename | regex_replace('\\.j2', '') }}"
     mode:  '0755'
     owner: root
     group: root
   with_fileglob:
-  - "../../templates/etc/bash_completion.sh"
+   - "../../templates/etc/bash_completion.sh"
+  tags: bash
+
+- name: "Autocomplete : Drop Custom Scripts Content"
+  copy:
+    content: "{{ item.content }}"
+    dest:    "{{ autocomplete_path }}/{{ item.name }}"
+    owner:   root
+    group:   root
+    mode:    '0775'
+  with_items: "{{ feature['files'] | default([]) }}"
+  when: item['content'] | default('') != ''
+  tags: bash
+
+- name: "Autocomplete : Drop Custom Scripts File"
+  copy:
+    src:   "{{ item.file }}"
+    dest:  "{{ autocomplete_path }}/{{ item.name }}"
+    owner: root
+    group: root
+    mode:  '0775'
+  with_items: "{{ feature['files'] | default([]) }}"
+  when: item['file'] | default('') != ''
+  tags: bash

@@ -10,3 +10,4 @@
   with_items:
    - 00-colours.sh
    - 20-prompt.sh
+  tags: bash

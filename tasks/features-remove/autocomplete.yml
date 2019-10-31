@@ -2,3 +2,9 @@
 
 - name: "Autocomplete : Main script"
   file: path="{{ bash_profile_d }}/bash_completion.sh" state=absent
+  tags: bash
+
+- name: "Autocomplete : Custom Scripts"
+  file: path="{{ bash_paths.autocomplete }}/{{ item.name }}" state=absent
+  with_items: "{{ feature['files'] | default([]) }}"
+  tags: bash

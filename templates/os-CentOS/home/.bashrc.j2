@@ -1,4 +1,3 @@
-#!/bin/bash
 # {{ ansible_managed }}
 #
 # MIT License
@@ -23,19 +22,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Don't show the MOTD more than once
-export SKIP_MOTD="true"
-
-# Get the aliases and functions
-if [ -f ~/.bashrc ]; then
-    . ~/.bashrc
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+    source /etc/bashrc
 fi
 
+{% if user.bashrc is defined %}
 # User specific environment and startup programs
-export PATH=$HOME/bin:$HOME/.local/bin:{% if user.path is defined and user.path != [] %}{{ user.path | join(':') }}{% endif %}:$PATH
-
-{% if user.bash_profile is defined %}
-{{ user.bash_profile }}
+{{ user.bashrc }}
 
 {% endif %}
 # vim: ft=sh:ts=4:sw=4

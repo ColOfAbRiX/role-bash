@@ -9,6 +9,7 @@
     mode:  '0775'
   when: profile_script.type | default('') == "file" and
         profile_script.state | default('') == "present"
+  tags: bash
 
 - name: "Drop-in : Copy Content : {{ profile_script.name }}"
   copy:
@@ -19,7 +20,9 @@
     mode:    '0775'
   when: profile_script.type | default('') == "text" and
         profile_script.state | default('') == "present"
+  tags: bash
 
 - name: "Drop-in : Remove File : {{ profile_script.name }}"
   file: path="{{ bash_profile_d }}/{{ profile_script.name }}" state=absent
   when: profile_script.state | default('') == "absent"
+  tags: bash

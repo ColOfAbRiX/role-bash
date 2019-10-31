@@ -1,8 +1,10 @@
 ---
 
 - name: "Install ~/.bashrc"
+  become: yes
+  become_user: "{{ user.username }}"
   template:
-    src:    "{{ item }}"
+    src:    "os-{{ ansible_distribution }}/home/.bashrc.j2"
     dest:   "~/.bashrc"
     force:  yes
     mode:   '0600'
@@ -11,14 +13,14 @@
     setype: user_home_t
   when: user.shell | default('/bin/bash') == '/bin/bash' and
         user["bashrc"] is defined
-  with_first_found:
-   - ../templates/os-{{ ansible_distribution }}/home/bashrc.j2
-   - ../templates/home/bashrc.j2
+  tags: bash
 
 - name: "Install ~/.profile"
+  become: yes
+  become_user: "{{ user.username }}"
   template:
-    src:    "{{ item }}"
-    dest:   "~/.bash_profile"
+    src:    "os-{{ ansible_distribution }}/home/.profile.j2"
+    dest:   "~/.profile"
     force:  yes
     mode:   '0600'
     seuser: system_u
@@ -26,6 +28,19 @@
     setype: user_home_t
   when: user.shell | default('/bin/bash') == '/bin/bash' and
         user["profile"] is defined
-  with_first_found:
-   - ../templates/os-{{ ansible_distribution }}/home/bash_profile.j2
-   - ../templates/home/bash_profile.j2
+  tags: bash
+
+- name: "Install ~/.bash_logout"
+  become: yes
+  become_user: "{{ user.username }}"
+  template:
+    src:    "os-{{ ansible_distribution }}/home/.bash_logout.j2"
+    dest:   "~/.bash_logout"
+    force:  yes
+    mode:   '0600'
+    seuser: system_u
+    serole: object_r
+    setype: user_home_t
+  when: user.shell | default('/bin/bash') == '/bin/bash' and
+        user["bash_logout"] is defined
+  tags: bash

@@ -3,23 +3,32 @@
 # Login Message of the Day
 bash_login_motd: "                                    Welcome!                                    \n"
 
+# System wide BASH customizations
 bash_features: []
-#    # Support for drop-in aliases plus several useful ones
-#  - name:  aliases
-#    state: present
-#    # Support for drop-in autocomplete plus several useful ones
+# # Support for drop-in aliases plus several useful ones
+# - name:  aliases
+#   files:
+#    - name: my_custom_aliases
+#      file: path_to_a_file
+#      content: |
+#        alias test='echo This is a test'
+#   state: present
+#  # Support for drop-in autocomplete plus several useful ones
 #  - name:  autocomplete
+#    files:
+#     - name: my_custom_autocomplete
+#       file: path_to_autocomplete_file
 #    state: present
-#    # Customize bash history
+#  # Customize bash history
 #  - name:  history
 #    state: present
-#    # Save history to syslog
+#  # Save history to syslog
 #  - name:  history2syslog
 #    state: present
-#    # Custom message-of-the-day
+#  # Custom message-of-the-day
 #  - name:  motd
 #    state: present
-#    # Custom shell prompt
+#  # Custom shell prompt
 #  - name:  prompt
 #    state: present
 
