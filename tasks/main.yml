@@ -20,8 +20,15 @@
   when: bash_os_dependencies[item.name] | default([]) != []
   tags: bash
 
+- name: "Latest PIP version"
+  pip:
+    name: pip
+    executable: pip3
+    extra_args: --upgrade
+  tags: bash
+
 - name: "PIP Dependencies"
-  pip: name="{{ bash_pip_dependencies[item.name] }}" state=present
+  pip: name="{{ bash_pip_dependencies[item.name] }}" state=present executable=pip3
   with_items:
    - { name: all, state: present }
    - "{{ bash_features }}"
