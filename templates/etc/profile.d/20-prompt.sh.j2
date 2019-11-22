@@ -33,18 +33,45 @@ _get_git_tag() {
         exit
     fi
 
-    local branch="$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/' || echo "")"
+    local git_status="$(git status --porcelain --branch 2> /dev/null)"
 
-    if [[ -z "$branch" ]] ; then
+    local git_branch="$(echo "${git_status}" | head -1 | sed -nre 's/^## ([^\.]+).*/\1/p')"
+    if [[ -z "$git_branch" ]] ; then
         echo ""
         exit
     fi
 
-    local git_diff="$(git diff --numstat --pretty="%H")"
-    local git_plus="$(awk 'NF==3 {plus += $1} END {printf("+%d", plus)}' <<< "$git_diff")"
-    local git_minus="$(awk 'NF==3 {minus += $2} END {printf("-%d\n", minus)}' <<< "$git_diff")"
+    local git_modified="$(echo "$git_status" | egrep "^( M|M ) " | wc -l)"
+    [[ "$git_modified" == "0" ]] && \
+        git_modified="" || \
+        git_modified="${C_FORE_LIGHT_YELLOW}${git_modified}M "
 
-    printf "$C_FORE_LIGHT_CYAN$branch$C_FORE_DEFAULT ($C_FORE_LIGHT_GREEN$git_plus $C_FORE_LIGHT_RED$git_minus$C_FORE_DEFAULT)"
+    local git_added="$(echo "$git_status" | egrep "^( A|A ) " | wc -l)"
+    [[ "$git_added" == "0" ]] && \
+        git_added="" || \
+        git_added="${C_FORE_LIGHT_GREEN}${git_added}A "
+
+    local git_deleted="$(echo "$git_status" | egrep "^( D|D ) " | wc -l)"
+    [[ "$git_deleted" == "0" ]] && \
+        git_deleted="" || \
+        git_deleted="${C_FORE_LIGHT_RED}${git_deleted}D "
+
+    local git_other="$(echo "$git_status" | egrep "^( [RC]|[RC] ) " | wc -l)"
+    [[ "$git_other" == "0" ]] && \
+        git_other="" || \
+        git_other="${C_FORE_WHITE}${git_other}O "
+
+    local git_untracked="$(echo "$git_status" | egrep "^\?\? " | wc -l)"
+    [[ "$git_untracked" == "0" ]] && \
+        git_untracked="" || \
+        git_untracked="${C_FORE_LIGHT_MAGENTA}${git_untracked}? "
+
+    local git_changes="${git_added}${git_deleted}${git_modified}${git_other}${git_untracked}"
+    if [[ "$git_changes" != "" ]] ; then
+        git_changes=" ($(echo "${git_changes}" | sed -e 's/ \+$//')${C_FORE_DEFAULT})"
+    fi
+
+    printf "${C_FORE_LIGHT_CYAN}${git_branch}${C_FORE_DEFAULT}${git_changes}"
 }
 
 _set_prompt() {
