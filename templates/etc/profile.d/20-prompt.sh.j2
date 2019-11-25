@@ -28,50 +28,41 @@
 [[ "$-" != *"i"* ]] && return
 
 _get_git_tag() {
-    if ! which git > /dev/null 2>&1 ; then
-        echo ""
-        exit
-    fi
-
     local git_status="$(git status --porcelain --branch 2> /dev/null)"
+    local git_branch="$(sed -nre 's/^## ([^\.]+).*/\1/p' <<< "${git_status}")"
+    [[ -z "${git_branch}" ]] && echo -n "" && exit
 
-    local git_branch="$(echo "${git_status}" | head -1 | sed -nre 's/^## ([^\.]+).*/\1/p')"
-    if [[ -z "$git_branch" ]] ; then
-        echo ""
-        exit
-    fi
+    # Using AWK to improve performance
+    local awk_command='
+    function rtrim(s) { sub(/[ \t\r\n]+$/, "", s); return s }
 
-    local git_modified="$(echo "$git_status" | egrep "^( M|M ) " | wc -l)"
-    [[ "$git_modified" == "0" ]] && \
-        git_modified="" || \
-        git_modified="${C_FORE_LIGHT_YELLOW}${git_modified}M "
+    BEGIN {
+        output = ""
+        modified = ""
+        added = ""
+        deleted = ""
+        other = ""
+        untracked = ""
+    }
 
-    local git_added="$(echo "$git_status" | egrep "^( A|A ) " | wc -l)"
-    [[ "$git_added" == "0" ]] && \
-        git_added="" || \
-        git_added="${C_FORE_LIGHT_GREEN}${git_added}A "
+    /^(.A|A.) /       { added += 1 }
+    /^(.D|D.) /       { deleted += 1 }
+    /^(.[MU]|[MU].) / { modified += 1 }
+    /^(.[RC]|[RC].) / { other += 1 }
+    /^(\?\?) /        { untracked += 1 }
 
-    local git_deleted="$(echo "$git_status" | egrep "^( D|D ) " | wc -l)"
-    [[ "$git_deleted" == "0" ]] && \
-        git_deleted="" || \
-        git_deleted="${C_FORE_LIGHT_RED}${git_deleted}D "
+    END {
+        if (added != "")     output = output "\033[92m" added "A "
+        if (deleted != "")   output = output "\033[91m" deleted "D "
+        if (modified != "")  output = output "\033[93m" modified "M "
+        if (other != "")     output = output "\033[96m" other "O "
+        if (untracked != "") output = output "\033[95m" untracked "? "
+        if (output != "")
+            print " (" rtrim(output) "\033[0m" ")"
+    }'
+    local git_summary="$(echo "${git_status}" | awk "$awk_command")"
 
-    local git_other="$(echo "$git_status" | egrep "^( [RC]|[RC] ) " | wc -l)"
-    [[ "$git_other" == "0" ]] && \
-        git_other="" || \
-        git_other="${C_FORE_WHITE}${git_other}O "
-
-    local git_untracked="$(echo "$git_status" | egrep "^\?\? " | wc -l)"
-    [[ "$git_untracked" == "0" ]] && \
-        git_untracked="" || \
-        git_untracked="${C_FORE_LIGHT_MAGENTA}${git_untracked}? "
-
-    local git_changes="${git_added}${git_deleted}${git_modified}${git_other}${git_untracked}"
-    if [[ "$git_changes" != "" ]] ; then
-        git_changes=" ($(echo "${git_changes}" | sed -e 's/ \+$//')${C_FORE_DEFAULT})"
-    fi
-
-    printf "${C_FORE_LIGHT_CYAN}${git_branch}${C_FORE_DEFAULT}${git_changes}"
+    echo -en "${C_FORE_LIGHT_CYAN}${git_branch}${git_summary}${C_FORE_DEFAULT}"
 }
 
 _set_prompt() {
@@ -85,36 +76,30 @@ _set_prompt() {
     #
 
     # Date
-    tags+=("$C_FORE_WHITE$(date +"%a %x %X")")
+    tags+=("${C_FORE_WHITE}$(date +"%a %x %X")")
 
     # Username
-    current_user="${USERNAME:-$USER}"
+    current_user="${USERNAME:-${USER}}"
 
     # Root user
     if [[ $EUID == 0 ]] ; then
         tags+=("${C_FORE_LIGHT_RED}ROOT")
     fi
 
-    # Environment
-    local machine_env="$(awk '{print toupper($0)}' <<< $MACHINE_ENV)"
-    if [[ "$machine_env" == 'INT' ]] ; then
-        tags+=("$C_FORE_LIGHT_YELLOW$machine_env")
-    elif [[ "$machine_env" == 'PRD' ]] ; then
-        tags+=("$C_FORE_LIGHT_RED$machine_env")
-    fi
-
     # GIT repository
-    local git_tag="$(_get_git_tag)"
-    if [[ -n "$git_tag" ]] ; then
-        tags+=("$git_tag")
+    if [[ "${GIT_INSTALLED}" == "true" ]] ; then
+        local git_tag="$(_get_git_tag)"
+        if [[ -n "${git_tag}" ]] ; then
+            tags+=("$git_tag")
+        fi
     fi
 
     # Command number
-    tags+=("$C_FORE_WHITE\!")
+    tags+=("${C_FORE_WHITE}\!")
 
     # Result of last command
-    if [[ $last_command != 0 ]] ; then
-        tags+=("$C_FORE_LIGHT_RED$last_command")
+    if [[ ${last_command} != 0 ]] ; then
+        tags+=("${C_FORE_LIGHT_RED}${last_command}")
     fi
 
     #
@@ -124,14 +109,14 @@ _set_prompt() {
     # Building LINE 1
     local line=""
     for tag in "${tags[@]}" ; do
-        line="$line$C_FORE_DEFAULT[$tag$C_FORE_DEFAULT]"
+        line="${line}${C_FORE_DEFAULT}[${tag}${C_FORE_DEFAULT}]"
     done
-    if [[ -n "$line" ]] ; then
-        lines+=("$line")
+    if [[ -n "${line}" ]] ; then
+        lines+=("${line}")
     fi
 
     # Building LINE 2
-    lines+=("$C_FORE_GREEN$current_user@\h$C_FORE_DEFAULT: $C_FORE_BLUE\w$C_FORE_DEFAULT")
+    lines+=("${C_FORE_GREEN}${current_user}@\h${C_FORE_DEFAULT}: ${C_FORE_BLUE}\w${C_FORE_DEFAULT}")
 
     # Building LINE 3
     lines+=("\\$ ")
@@ -142,7 +127,7 @@ _set_prompt() {
 
     export PS1=""
     for ((i = 0; i < {% raw %}${#lines[@]}{% endraw %}; i++)) ; do
-        PS1="$PS1\n${lines[$i]}"
+        PS1="${PS1}\n${lines[$i]}"
     done
 
     # Emergency prompt, back to the usual one
@@ -152,5 +137,6 @@ _set_prompt() {
 }
 
 export PROMPT_COMMAND="_set_prompt"
+export GIT_INSTALLED="$(which git > /dev/null 2>&1 && echo true || echo false)"
 
 # vim: ft=sh:ts=4:sw=4
