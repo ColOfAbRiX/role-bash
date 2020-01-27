@@ -15,8 +15,6 @@ bash_os_dependencies:
 bash_pip_dependencies:
   all:            []
   motd:
-   # The specific version is because colored is broken:
-   # https://stackoverflow.com/questions/51072434/pip-install-colored-getting-error-filenotfounderror-errno-2-no-such-file-or
    - colored
   autocomplete:   []
   aliases:        []

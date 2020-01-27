@@ -1,46 +1,17 @@
 ---
 
-- name: "Install ~/.bashrc"
-  become: yes
-  become_user: "{{ user.username }}"
+- name: "Install Dotfiles"
   template:
-    src:    "os-{{ ansible_distribution }}/home/.bashrc.j2"
-    dest:   "~/.bashrc"
+    src:    "os-{{ ansible_distribution | lower }}/home/{{ item }}.j2"
+    dest:   "~/{{ item }}"
     force:  yes
     mode:   '0600'
     seuser: system_u
     serole: object_r
     setype: user_home_t
-  when: user.shell | default('/bin/bash') == '/bin/bash' and
-        user["bashrc"] is defined
-  tags: bash
-
-- name: "Install ~/.profile"
-  become: yes
-  become_user: "{{ user.username }}"
-  template:
-    src:    "os-{{ ansible_distribution }}/home/.profile.j2"
-    dest:   "~/.profile"
-    force:  yes
-    mode:   '0600'
-    seuser: system_u
-    serole: object_r
-    setype: user_home_t
-  when: user.shell | default('/bin/bash') == '/bin/bash' and
-        user["profile"] is defined
-  tags: bash
-
-- name: "Install ~/.bash_logout"
-  become: yes
-  become_user: "{{ user.username }}"
-  template:
-    src:    "os-{{ ansible_distribution }}/home/.bash_logout.j2"
-    dest:   "~/.bash_logout"
-    force:  yes
-    mode:   '0600'
-    seuser: system_u
-    serole: object_r
-    setype: user_home_t
-  when: user.shell | default('/bin/bash') == '/bin/bash' and
-        user["bash_logout"] is defined
+  when: user.shell | default('/bin/bash') == '/bin/bash'
+  with_items:
+   - .bashrc
+   - .bash_profile
+   - .bash_logout
   tags: bash

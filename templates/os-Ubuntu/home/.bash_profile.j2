@@ -27,4 +27,9 @@ if [ -d "$HOME/.local/bin" ] ; then
    PATH="$HOME/.local/bin:$PATH"
 fi
 
+{% if user.bash_profile is defined -%}
+# User specific configuration
+{{ user.bash_profile }}
+
+{% endif %}
 # vim: ft=sh:ts=4:sw=4

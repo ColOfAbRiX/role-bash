@@ -3,12 +3,13 @@
 - name: "Require Correct Linux Distribution"
   assert:
     that: (ansible_distribution in ['CentOS', 'RedHat'] and ansible_distribution_version | version_compare('6.0.0', '>=')) or
-          (ansible_distribution == 'Ubuntu' and ansible_distribution_version | version_compare('16.0.0', '>='))
+          (ansible_distribution == 'Ubuntu' and ansible_distribution_version | version_compare('16.0.0', '>=')) or
+          (ansible_distribution == 'Debian' and ansible_distribution_version | version_compare('6.0.0', '>='))
     msg:  "This Linux distribution '{{ ansible_distribution }} {{ ansible_distribution_version }}' is not supported by the role."
   tags: bash
 
 - name: "Include OS Variables"
-  include_vars: "vars_{{ ansible_distribution }}.yml"
+  include_vars: "vars-{{ ansible_distribution | lower }}.yml"
   tags: bash
 
 
@@ -67,6 +68,8 @@
 
 
 - name: "User Configuration Files"
+  become: yes
+  become_user: "{{ user.username }}"
   include_tasks: config_user.yml
   with_items:
    - "{{ bash_users | default([]) }}"

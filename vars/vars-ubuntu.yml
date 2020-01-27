@@ -1,0 +1,34 @@
+---
+
+bash_os_dependencies:
+  all:
+   - python3-pip
+  motd:
+   - python3-psutil
+   - python3-pyfiglet
+  autocomplete:   []
+  aliases:        []
+  history:        []
+  history2syslog: []
+  prompt:         []
+
+bash_pip_dependencies:
+  all:            []
+  motd:
+   - colored
+  autocomplete:   []
+  aliases:        []
+  history:        []
+  history2syslog: []
+  prompt:         []
+
+bash_paths:
+  all:            ''
+  aliases:        /etc/bash_aliases.d
+  autocomplete:   /etc/bash_completion.d
+  motd:           /etc/motd.d
+  history:        ''
+  history2syslog: ''
+  prompt:         ''
+
+bash_profile_d: /etc/profile.d
