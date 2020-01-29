@@ -68,8 +68,6 @@
 
 
 - name: "User Configuration Files"
-  become: yes
-  become_user: "{{ user.username }}"
   include_tasks: config_user.yml
   with_items:
    - "{{ bash_users | default([]) }}"
