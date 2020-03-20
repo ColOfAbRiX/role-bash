@@ -28,7 +28,7 @@
     owner: root
     group: root
   with_fileglob:
-   - "../../templates/etc/bash_completion.sh"
+   - "../../templates/etc/*.j2"
   tags: bash
 
 - name: "Autocomplete : Drop Custom Scripts Content"

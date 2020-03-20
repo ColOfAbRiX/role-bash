@@ -33,7 +33,7 @@
 # Show MOTD only for interactive shells
 if [ -t 1 ] && [ -d /etc/motd.d ] ; then
     for FILE in /etc/motd.d/* ; do
-        [ $FILE != "motd" -a -x $FILE ] && $FILE
+        [ $FILE != "motd" -a -x $FILE ] && $FILE 2> /dev/null
     done
 fi
 

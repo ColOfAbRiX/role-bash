@@ -28,7 +28,7 @@
     owner: root
     group: root
   with_fileglob:
-   - "../../templates/etc/bash_aliases.d/*"
+   - "../../templates/etc/bash_aliases.d/*.j2"
   tags: bash
 
 - name: "Aliases : Drop Custom Scripts Content"

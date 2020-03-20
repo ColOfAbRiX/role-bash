@@ -24,7 +24,7 @@
     group: root
     mode:  '0775'
   with_fileglob:
-   - "../../templates/etc/motd.d/*.py"
+   - "../../templates/etc/motd.d/*.j2"
   tags: bash
 
 - name: "MOTD : Copy text file"
