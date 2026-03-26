@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# {{ ansible_managed }}
 #
 # MIT License
 #
@@ -26,19 +25,15 @@
 # Displays system information
 #
 
-from __future__ import print_function
+# from __future__ import print_function
 import re
 import os
 import math
-import json
 import time
-import fcntl
-import random
+import common
 import socket
 import struct
-import platform
 import datetime
-import subprocess
 
 try:
     import psutil
@@ -215,7 +210,7 @@ except:
 # Linux distribution
 #
 try:
-    dist, ver, _ = platform.linux_distribution(full_distribution_name=True)
+    dist, ver, _ = common.get_linux_distribution()
     value = "{0} {1}".format(dist, ver)
     if value != " ":
         data_output.append({
@@ -349,7 +344,7 @@ try:
             st_str, mt_str, lt_str
         )
 
-    if shortterm > 0.0 and midterm > 0.0 and longterm > 0.0:
+    if isinstance(shortterm, float) and isinstance(midterm, float) and isinstance(longterm, float):
         data_output.append({
             'title': 'System Load',
             'value': output,

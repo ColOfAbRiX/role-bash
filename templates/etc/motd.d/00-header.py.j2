@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# {{ ansible_managed }}
 #
 # MIT License
 #
@@ -29,6 +28,7 @@
 from __future__ import print_function
 import time
 import math
+import common
 import random
 import socket
 import platform
@@ -46,10 +46,20 @@ except ImportError:
 random.seed()
 
 
+def tt_len(text):
+    def size(c):
+        if c in "acqpdbwmWMNOQLA":
+            return 1.3
+        elif c in "1frtijlIJ`[];’,. ! ()\"":
+            return 0.7
+        return 1.0
+    return math.ceil(sum(map(size, text)))
+
+
 #
 # Gather information
 #
-dist, ver, flav = platform.linux_distribution(full_distribution_name=True)
+dist, ver, _ = common.get_linux_distribution()
 kernel   = platform.release()
 hostname = socket.gethostname().split(".")[0]
 if dist == "":
@@ -67,15 +77,6 @@ print(
         .format(dist, kernel)
         .center(80)
 )
-
-def tt_len(text):
-    def size(c):
-        if c in "acqpdbwmWMNOQLA":
-            return 1.3
-        elif c in "1frtijlIJ`[];’,. ! ()\"":
-            return 0.7
-        return 1.0
-    return math.ceil(sum(map(size, text)))
 
 if __colored__:
     # Random color based on the current time

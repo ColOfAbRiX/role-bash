@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 # MIT License
 #
@@ -21,19 +22,32 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Don't show the MOTD more than once
-export SKIP_MOTD="true"
+import platform
 
-# Get the aliases and functions
-if [ -f ~/.bashrc ]; then
-    . ~/.bashrc
-fi
+def get_linux_distribution():
+    if hasattr(platform, 'freedesktop_os_release'):
+        try:
+            info = platform.freedesktop_os_release()
+            return info.get('NAME', ''), info.get('VERSION', ''), info.get('ID', '')
+        except:
+            pass
 
-# User specific environment and startup programs
-export PATH=$HOME/bin:$HOME/.local/bin:{% if user.path is defined and user.path != [] %}{{ user.path | join(':') }}{% endif %}:$PATH
+    try:
+        with open('/etc/os-release', 'r') as f:
+            lines = f.readlines()
+        info = {}
+        for line in lines:
+            if '=' in line:
+                key, value = line.strip().split('=', 1)
+                info[key] = value.strip('\"')
 
-{% if user.bash_profile is defined %}
-{{ user.bash_profile }}
+        name = info.get('PRETTY_NAME', info.get('NAME', ''))
+        version = info.get('VERSION', info.get('VERSION_ID', ''))
+        flavor = info.get('ID', '')
+        return name, version, flavor
+    except:
+        pass
 
-{% endif %}
-# vim: ft=sh:ts=4:sw=4
+    return platform.system(), platform.release(), ''
+
+# vim: ft=python:ts=4:sw=4

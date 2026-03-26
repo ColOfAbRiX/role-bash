@@ -4,6 +4,7 @@ bash_os_dependencies:
   all:
    - python3-pip
   motd:
+   - python3-dev
    - python3-psutil
    - python3-pyfiglet
   autocomplete:   []
