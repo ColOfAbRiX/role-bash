@@ -1,9 +1,9 @@
 ---
 
 - name: "Install Dotfiles"
-  become: yes
+  become: true
   become_user: "{{ user.username }}"
-  template:
+  ansible.builtin.template:
     src:    "os-{{ ansible_distribution | lower }}/home/{{ item }}.j2"
     dest:   "~/{{ item }}"
     force:  yes

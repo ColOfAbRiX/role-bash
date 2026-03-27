@@ -1,7 +1,7 @@
 ---
 
 - name: "Drop-in : Copy File : {{ profile_script.name }}"
-  template:
+  ansible.builtin.template:
     src:   "{{ profile_script.path }}"
     dest:  "{{ bash_profile_d }}/{{ profile_script.name }}"
     owner: root
@@ -12,7 +12,7 @@
   tags: bash
 
 - name: "Drop-in : Copy Content : {{ profile_script.name }}"
-  copy:
+  ansible.builtin.copy:
     content: "{{ profile_script.content }}"
     dest:    "{{ bash_profile_d }}/{{ profile_script.name }}"
     owner:   root
@@ -23,6 +23,6 @@
   tags: bash
 
 - name: "Drop-in : Remove File : {{ profile_script.name }}"
-  file: path="{{ bash_profile_d }}/{{ profile_script.name }}" state=absent
+  ansible.builtin.file: path="{{ bash_profile_d }}/{{ profile_script.name }}" state=absent
   when: profile_script.state | default('') == "absent"
   tags: bash

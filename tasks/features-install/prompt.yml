@@ -1,7 +1,7 @@
 ---
 
 - name: "Prompt : Main script"
-  template:
+  ansible.builtin.template:
     src:   "etc/profile.d/{{ item }}.j2"
     dest:  "{{ bash_profile_d }}/{{ item }}"
     mode:  '0755'

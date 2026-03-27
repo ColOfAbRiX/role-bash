@@ -1,11 +1,11 @@
 ---
 
-- set_fact:
+- ansible.builtin.set_fact:
     aliases_path: "{{ bash_paths.aliases }}"
   tags: bash
 
 - name: "Aliases : Main script"
-  template:
+  ansible.builtin.template:
     src:   etc/profile.d/bash_aliases.sh.j2
     dest:  "{{ bash_profile_d }}/bash_aliases.sh"
     mode:  '0755'
@@ -14,14 +14,14 @@
   tags: bash
 
 - name: "Aliases : Directory"
-  file:
+  ansible.builtin.file:
     path:  "{{ aliases_path }}"
     state: directory
     mode:  '0755'
   tags: bash
 
 - name: "Aliases : Copy Files"
-  template:
+  ansible.builtin.template:
     src:   "{{ item }}"
     dest:  "{{ aliases_path }}/{{ item | basename | regex_replace('\\.j2', '') }}"
     mode:  '0755'
@@ -32,7 +32,7 @@
   tags: bash
 
 - name: "Aliases : Drop Custom Scripts Content"
-  copy:
+  ansible.builtin.copy:
     content: "{{ item.content }}"
     dest:    "{{ aliases_path }}/{{ item.name }}"
     owner:   root
@@ -43,7 +43,7 @@
   tags: bash
 
 - name: "Aliases : Drop Custom Scripts File"
-  copy:
+  ansible.builtin.copy:
     src:   "{{ item.file }}"
     dest:  "{{ aliases_path }}/{{ item.name }}"
     owner: root
@@ -56,12 +56,12 @@
 - name: "Aliases : Remove Unwanted Files in CentOS"
   block:
 
-   - copy: remote_src=True src="{{ item }}" dest="{{ item }}-ansible-unused"
+   - ansible.builtin.copy: remote_src=True src="{{ item }}" dest="{{ item }}-ansible-unused"
      with_items:
       - /etc/profile.d/colorls.sh
       - /etc/profile.d/colorls.csh
 
-   - file: path="{{ item }}" state=absent
+   - ansible.builtin.file: path="{{ item }}" state=absent
      with_items:
       - /etc/profile.d/colorls.sh
       - /etc/profile.d/colorls.csh

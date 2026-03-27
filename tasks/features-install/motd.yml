@@ -10,14 +10,14 @@
   tags: bash
 
 - name: "MOTD : Directory"
-  file:
+  ansible.builtin.file:
     path:  "{{ bash_paths.motd }}"
     state: directory
     mode:  '0755'
   tags: bash
 
 - name: "MOTD : Copy Files"
-  template:
+  ansible.builtin.template:
     src:   "{{ item }}"
     dest:  "{{ bash_paths.motd }}/{{ item | basename | regex_replace('\\.j2$', '') }}"
     owner: root
@@ -28,7 +28,7 @@
   tags: bash
 
 - name: "MOTD : Copy text file"
-  template:
+  ansible.builtin.template:
     src:   "etc/motd.d/motd.j2"
     dest:  "{{ bash_paths.motd }}/motd"
     owner: root

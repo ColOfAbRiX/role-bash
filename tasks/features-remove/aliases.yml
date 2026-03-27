@@ -1,23 +1,23 @@
 ---
 
 - name: "Aliases : Main script"
-  file: path="{{ bash_profile_d }}/bash_aliases.sh" state=absent
+  ansible.builtin.file: path="{{ bash_profile_d }}/bash_aliases.sh" state=absent
   tags: bash
 
 - name: "Aliases : Custom Scripts"
-  file: path="{{ bash_paths.aliases }}/{{ item.name }}" state=absent
+  ansible.builtin.file: path="{{ bash_paths.aliases }}/{{ item.name }}" state=absent
   with_items: "{{ feature['files'] | default([]) }}"
   tags: bash
 
 - name: "Aliases : Copy Back Removed Files in CentOS"
   block:
 
-   - copy: remote_src=True src="{{ item }}" dest="{{ item }}"
+   - ansible.builtin.copy: remote_src=True src="{{ item }}" dest="{{ item }}"
      with_items:
       - /etc/profile.d/colorls.sh-ansible-unused
       - /etc/profile.d/colorls.csh-ansible-unused
 
-   - file: path="{{ item }}" state=absent
+   - ansible.builtin.file: path="{{ item }}" state=absent
      with_items:
       - /etc/profile.d/colorls.sh-ansible-unused
       - /etc/profile.d/colorls.csh-ansible-unused
