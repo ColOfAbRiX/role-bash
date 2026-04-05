@@ -1,19 +1,28 @@
 ---
 galaxy_info:
-  license: MIT
   author: Fabrizio Colonna <colofabrix@tin.it>
-  description: Configuration and Customization for BASH
-  min_ansible_version: 2.5.0
-
-  # List tags for your role here, one per line. A tag is a keyword that describes
-  # and categorizes the role. Users find roles by searching for tags. Be sure to
-  # remove the '[]' above, if you add tags to this list.
-  #
-  # NOTE: A tag is limited to a single word comprised of alphanumeric characters.
-  #       Maximum 20 tags per role.
+  description: BASH shell configuration and customization with MOTD, aliases, history, and prompt
+  license: MIT
+  min_ansible_version: "2.10"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - xenial
+        - bionic
+        - focal
+        - jammy
+        - noble
+    - name: Debian
+      versions:
+        - bookworm
+        - bullseye
+        - buster
   galaxy_tags:
     - bash
+    - shell
+    - configuration
     - system
-    - utilities
+    - motd
+    - aliases
 
 dependencies: []
