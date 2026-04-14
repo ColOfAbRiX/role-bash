@@ -1,6 +1,6 @@
 ---
 galaxy_info:
-  author: Fabrizio Colonna <colofabrix@tin.it>
+  author: Fabrizio Colonna (@ColOfAbRiX)
   description: BASH shell configuration and customization with MOTD, aliases, history, and prompt
   license: MIT
   min_ansible_version: "2.10"
