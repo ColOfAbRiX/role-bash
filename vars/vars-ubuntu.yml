@@ -2,6 +2,7 @@
 
 bash_os_dependencies:
   all:
+   - bash-completion
    - python3-pip
   motd:
    - python3-dev
