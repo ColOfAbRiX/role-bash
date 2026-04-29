@@ -9,6 +9,33 @@
     group: root
   tags: bash
 
+- name: "MOTD : Silence Ubuntu default MOTD scripts"
+  become: yes
+  ansible.builtin.find:
+    paths: /etc/update-motd.d
+    patterns: "*"
+    file_type: file
+  register: motd_scripts
+  tags: bash
+
+- name: "MOTD : Set default Ubuntu scripts to non-executable"
+  become: yes
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    mode: '0644'
+  loop: "{{ motd_scripts.files }}"
+  when: "'90-custom' not in item.path"
+  tags: bash
+
+- name: "MOTD : Disable motd-news.timer"
+  become: yes
+  ansible.builtin.systemd:
+    name: motd-news.timer
+    state: stopped
+    enabled: no
+    masked: yes
+  tags: bash
+
 - name: "MOTD : Directory"
   ansible.builtin.file:
     path:  "{{ bash_paths.motd }}"
