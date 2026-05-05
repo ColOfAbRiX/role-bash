@@ -28,8 +28,8 @@
 
 # Load all aliases from a specific directory
 if [ -d /etc/bash_aliases.d ] ; then
-    for FILE in /etc/bash_aliases.d/* ; do
-        . $FILE
+    for FILE in $(ls /etc/bash_aliases.d/ | sort) ; do
+        [ -f "/etc/bash_aliases.d/$FILE" ] && . "/etc/bash_aliases.d/$FILE"
     done
 fi
 
